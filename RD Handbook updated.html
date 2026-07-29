@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EV Support Handbook</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f9; }
+.container { max-width:1100px; margin:auto; padding:20px; }
+h1 { text-align:center; }
+
+.tabs { display:flex; margin-bottom:10px; }
+.tab { flex:1; padding:12px; cursor:pointer; text-align:center; background:#ddd; font-weight:bold; }
+.tab.active { background:#007bff; color:white; }
+
+.tab-content { display:none; background:white; padding:20px; }
+.tab-content.active { display:block; }
+
+.card { margin:10px 0; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
+.card-header { padding:12px; color:white; cursor:pointer; font-weight:bold; }
+.card-content { display:none; padding:12px; background:#fff; line-height:1.7; }
+
+.battery { background:#e74c3c; }
+.charger { background:#3498db; }
+.supply { background:#f39c12; }
+.mixed { background:#9b59b6; }
+.normal { background:#2ecc71; }
+
+.search-box { width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; }
+.rule { background:yellow; padding:12px; font-weight:bold; margin-bottom:10px; }
+.note { background:#eef6ff; padding:10px; margin-top:10px; border-left:4px solid #3498db; }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Baas Remote Diagnostic handbook</h1>
+
+<div class="tabs">
+  <div class="tab active" onclick="openTab(event,'quick')">Quick Troubleshooting</div>
+  <div class="tab" onclick="openTab(event,'range')">Battery Less Range</div>
+  <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
+  <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
+</div>
+
+<!-- QUICK -->
+<div id="quick" class="tab-content active">
+
+<div class="card">
+<div class="card-header charger" onclick="toggle(this)">🔌 Charger Not Working</div>
+<div class="card-content">
+• Sir, kya charger me light aa rahi hai?<br>
+• Agr nahi aa rhi hai toh Sir, ek br charger cable ko nikal kr dobaara connect kijiye and dusre socket me lgaiye.<br>
+• Sir, Charger ke kaale rang ke adaptor k upr ek safed button hoga use daba k rkhiye 10sec tk aur frr check kijiye charge me lgakr.<br>
+• Sir ek pankhe ko thoda saaf kriye uss pr dhul jami ho sakti hai.
+• Sir, agar koi error aa rha hai toh btaiye error aa raha hai toh error code batayein.
+</div>
+</div>
+
+<div class="card">
+<div class="card-header battery" onclick="toggle(this)">🔋 Battery Not Working</div>
+<div class="card-content">
+• <B>Important!:<B/> MOSFET check kro ki woh ON hai ki nahi and kya koi critical alert hai?
+• Sir, kya battery me light aa rahi hai? Agr aa rahi toh kya handle meter me bhi aa rahi hai? Agr handle meter me nahi aa rahi hai toh ek br aap Harness wire ko nikal kr saaf krke dobaara lgaiye.<br>
+• Sir, MCB ko OFF krke ON kriye.<br>
+• Sir, charger connect karke check kijiye charging ho rahi hai ya error aa raha hai.<br>
+• Sir, 15–20 min baad MCB OFF–ON karke restart kijiye.<br>
+• Sir, agar issue solve nahi hota, main F-Ops team ko assign kar raha hoon.
+</div>
+</div>
+
+<div class="card">
+<div class="card-header mixed" onclick="toggle(this)">📊 SOC Meter Not Working</div>
+<div class="card-content">
+• Sir, wire harness reconnect kijiye aur vehicle restart kijiye.<br>
+• Sir, hide button press kijiye, CAN pin remove karke dobara insert kijiye.<br>
+• Sir, agar issue continue hota hai, main F-Ops assign kar raha hoon.
+<div class="note">
+SOC meter voltage aur charging level dikhata hai.
+</div>
+</div>
+</div>
+
+</div>
+
+<!-- RANGE -->
+<div id="range" class="tab-content">
+
+<div class="card">
+<div class="card-header normal" onclick="toggle(this)">Battery Less Range – Full Script</div>
+<div class="card-content">
+
+Sir, samajh aa raha hai aapko range kam lag rahi hai, main check karta hoon detail mein ki range kitna de rahi hai.<br><br>
+
+Sir, system ke hisaab se aapki battery ne ___ km ki range di hai, jo ki normal range mein aati hai.<br><br>
+
+Sir, aap battery aur charging ka kaafi achha dhyaan rakh rahe hain—yeh data mein bhi clearly dikh raha hai.<br><br>
+
+Kabhi-kabhi road condition, traffic, load ya tez acceleration ki wajah se battery jaldi drain hoti hui lagti hai.<br><br>
+
+Sir, aap battery ko 100% se 20% tak ek normal ride mein use karke dekhiye.<br><br>
+
+Sir, main samajh raha hoon aapko lag raha hai range kam hai, lekin ek baar 10–15 din test karke dekhiye.<br><br>
+
+Battery ka point fluctuation normal hai, especially kharab road ya chadhai par.<br><br>
+
+Battery bilkul theek kaam kar rahi hai—bas usage ki wajah se aisa feel ho raha hai.
+
+</div>
+</div>
+
+</div>
+
+<!-- ERRORS FULL -->
+<div id="errors" class="tab-content">
+
+<div class="rule">
+• Same error with multiple batteries → Charger issue<br>
+• Same battery failing on multiple chargers → Battery issue
+</div>
+
+<input type="text" class="search-box" placeholder="Search error..." onkeyup="searchError(this.value)">
+
+<div class="card error-card"><div class="card-header supply" onclick="toggle(this)">E1 - High AC Frequency</div><div class="card-content"><b>Description:</b> Input frequency >55 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur ek baar kahi aur lga k check kriye.</div></div>
+
+<div class="card error-card"><div class="card-header supply" onclick="toggle(this)">E2 - Low AC Frequency</div><div class="card-content"><b>Description:</b> Input frequency <45 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur thodi der baar ya kahi dusre area me lga k check kriye.</div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">E3 - Communication Error</div><div class="card-content"><b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.</div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">E3 - Communication Error</div><div class="card-content"><b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.</div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C6 - Charger is over heating</div><div class="card-content"><b>Remarks:</b>Heating issue<br><b>Action:</b> Sir, ye heating issue hai, aap apne charger ko thodi der kahi hawadaar jagah pr rkh dijiye jisse woh thanda ho jaae and uske baad ye apne aap theek ho jaaega jb aap ise charge me lgaenge.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C3 - Under Voltage issue</div><div class="card-content"><b>Remarks:</b>Under Voltage issue<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C4 - Over Voltage issue</div><div class="card-content"><b>Remarks:</b>Over Voltage issue<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C7 - Charger is under temprature</div><div class="card-content"><b>Remarks:</b>Heating issue<br><b>Action:</b> Sir, apke charger ka temprature low ho gaya hai jis wajah se ye work nahi kr rha hai, mai engineer ko assign kr deta hu.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">E4 - Battery Disconnected</div><div class="card-content"><b>Remarks:</b> DC connector/BMS cutoff<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.</div></div>
+
+<div class="card error-card"><div class="card-header battery" onclick="toggle(this)">E5 - Battery Dead</div><div class="card-content"><b>Remarks:</b> Dead battery<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.</div></div>
+
+<div class="card error-card"><div class="card-header charger" onclick="toggle(this)">E6 - Reverse Battery</div><div class="card-content"><b>Remarks:</b> Polarity swapped<br><b>Action:</b> Sir, charger ko sahi "+" aur "-" se connect kijiye.</div></div>
+
+<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">P2 - CC1 Time Exceeded</div><div class="card-content"><b>Remarks:</b> >2.5 hrs<br><b>Action:</b> Sir, ek baar dusri battery charge karke dekhiye.</div></div>
+
+<div class="card error-card"><div class="card-header battery" onclick="toggle(this)">B5 - Battery Over Temp</div><div class="card-content"><b>Remarks:</b> Buzzer<br><b>Action:</b> Sir, battery ko rest de dijiye, agar issue continue hota hai toh main F-Ops assign kar dunga.</div></div>
+
+<div class="card error-card"><div class="card-header normal" onclick="toggle(this)">FC - Full Charge</div><div class="card-content"><b>Remarks:</b> Fully charged<br><b>Action:</b> Sir, battery fully charge ho gayi hai, remove kar dijiye.</div></div>
+
+</div>
+
+<!-- ✅ UPDATED WELCOME SCRIPT -->
+<div id="welcome" class="tab-content">
+
+<div class="card">
+<div class="card-header normal" onclick="toggle(this)">📞 Welcome Call Script</div>
+<div class="card-content">
+
+<b>Introduction</b><br><br>
+Namaskar Sir, main Battery Smart se [Caller Name] bol raha hoon. Kya meri baat [Driver Name] se ho rahi hai?<br><br>
+Sir, system me check kar raha hoon ki aap recently Battery Smart ke saath onboard hue hain. Sabse pehle, aapka humare saath judne ke liye bahut-bahut dhanyavaad.<br><br>
+Kya abhi 2–3 minute baat karne ke liye theek samay hai?<br><br>
+
+<b>Objective of Call</b><br><br>
+Sir, ye ek welcome call hai jisme main aapko battery aur charger ko sahi tarike se use karne ki basic information share karunga.<br><br>
+Isse aapko better battery range milegi aur future me issues kam aayenge. Agar beech me koi bhi doubt aaye, aap bina hesitation ke pooch sakte hain.<br><br>
+
+<b>Battery Usage Tips</b><br><br>
+• Sir, kyunki aapne nayi battery li hai, sabse pehle ise full charge (FC) tak charge karein.<br>
+• Battery ko kabhi bhi completely discharge na hone dein — jaise hi 20% SOC aaye, charging laga dein.<br>
+• Hamesha Battery Smart ka original charger hi use karein.<br>
+• Third-party charger ya repair se bachhein, isse battery damage ho sakti hai.<br><br>
+
+<b>Charger Usage Tips</b><br><br>
+• Charging hamesha dry aur ventilated jagah par karein.<br>
+• Charger lagate hi indicator light ON honi chahiye.<br>
+• Charger ki lead aur plug properly connected hone chahiye.<br>
+• Switch board ON hona zaroori hai.<br><br>
+Ek important baat — agar charger lost ya stolen ho jata hai, to company policy ke according ₹10,000 charge lagta hai.<br><br>
+
+<b>How to Get Better Battery Range</b><br><br>
+• Battery ko hamesha 100% charge karke use karein.<br>
+• Vehicle ko overload na karein — ideal load driver + 3–4 passengers tak rakhein.<br>
+• Tyre pressure 40–45 PSI maintain rakhein.<br>
+• Vehicle ka regular maintenance karte rahein.<br>
+• Sudden acceleration aur rough driving se bachein.<br><br>
+
+<b>MCB Handling</b><br><br>
+• Junction box ko hamesha properly cover karke rakhein.<br>
+• Charging ke time MCB OFF rakhein.<br><br>
+
+<b>CAN Wire Check</b><br><br>
+• Battery connector wire properly connected honi chahiye.<br>
+• Meter par CAN communication light blink karni chahiye.<br><br>
+
+<b>Common Issues & Quick Checks</b><br><br>
+1️⃣ Wire harness connection loose to nahi hai<br>
+2️⃣ MCB trip ya OFF to nahi hai<br>
+3️⃣ Battery me charge hai ya nahi<br><br>
+
+<b>Support Process</b><br><br>
+• Driver App se request raise karein<br>
+• Ya support number 8055300400 par call karein<br><br>
+
+<b>Closing Pitch</b><br><br>
+Sir, ummeed hai jo information maine share ki hai wo aapke liye helpful rahegi.<br>
+Safe driving karein — aapka din shubh rahe!
+
+</div>
+</div>
+
+</div>
+
+</div>
+
+<script>
+function toggle(el){
+ let c=el.nextElementSibling;
+ c.style.display=c.style.display==="block"?"none":"block";
+}
+function openTab(evt,tab){
+ document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+ document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
+ evt.target.classList.add("active");
+ document.getElementById(tab).classList.add("active");
+}
+function searchError(input){
+ let cards=document.querySelectorAll(".error-card");
+ cards.forEach(card=>{
+   let text=card.innerText.toLowerCase();
+   card.style.display=text.includes(input.toLowerCase())?"block":"none";
+ });
+}
+</script>
+
+</body>
+</html>
