@@ -2,237 +2,673 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EV Support Handbook</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BaaS Remote Diagnostic Handbook</title>
 
 <style>
-body { font-family: Arial; margin:0; background:#f4f6f9; }
-.container { max-width:1100px; margin:auto; padding:20px; }
-h1 { text-align:center; }
+  :root {
+    --primary: #0066cc;
+    --primary-dark: #004c99;
+    --bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --border-radius: 8px;
+    
+    /* Category Colors */
+    --battery-color: #e74c3c;
+    --charger-color: #2980b9;
+    --supply-color: #f39c12;
+    --mixed-color: #8e44ad;
+    --normal-color: #27ae60;
+  }
 
-.tabs { display:flex; margin-bottom:10px; }
-.tab { flex:1; padding:12px; cursor:pointer; text-align:center; background:#ddd; font-weight:bold; }
-.tab.active { background:#007bff; color:white; }
+  body { 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    margin: 0; 
+    background: var(--bg); 
+    color: var(--text);
+  }
 
-.tab-content { display:none; background:white; padding:20px; }
-.tab-content.active { display:block; }
+  .container { 
+    max-width: 1100px; 
+    margin: auto; 
+    padding: 20px; 
+  }
 
-.card { margin:10px 0; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.1); }
-.card-header { padding:12px; color:white; cursor:pointer; font-weight:bold; }
-.card-content { display:none; padding:12px; background:#fff; line-height:1.7; }
+  h1 { 
+    text-align: center; 
+    color: var(--primary-dark);
+    margin-bottom: 20px;
+  }
 
-.battery { background:#e74c3c; }
-.charger { background:#3498db; }
-.supply { background:#f39c12; }
-.mixed { background:#9b59b6; }
-.normal { background:#2ecc71; }
+  /* Sticky Header & Tabs */
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
 
-.search-box { width:100%; padding:10px; margin:10px 0; border:1px solid #ccc; }
-.rule { background:yellow; padding:12px; font-weight:bold; margin-bottom:10px; }
-.note { background:#eef6ff; padding:10px; margin-top:10px; border-left:4px solid #3498db; }
+  .tabs { 
+    display: flex; 
+    gap: 8px;
+    background: #e0e6ed;
+    padding: 6px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  }
+
+  .tab { 
+    flex: 1; 
+    padding: 12px; 
+    cursor: pointer; 
+    text-align: center; 
+    background: transparent; 
+    font-weight: 600; 
+    border-radius: 6px;
+    transition: all 0.25s ease;
+  }
+
+  .tab:hover { background: rgba(255,255,255,0.6); }
+  .tab.active { background: var(--primary); color: white; }
+
+  /* Tab Content */
+  .tab-content { display: none; background: var(--card-bg); padding: 25px; border-radius: var(--border-radius); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .tab-content.active { display: block; }
+
+  /* Animated Cards UI */
+  .card { 
+    margin: 14px 0; 
+    border-radius: var(--border-radius); 
+    overflow: hidden; 
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .card-header { 
+    padding: 14px 18px; 
+    color: white; 
+    cursor: pointer; 
+    font-weight: bold; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+  }
+
+  .card-header .header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-header::after {
+    content: '▼';
+    font-size: 12px;
+    transition: transform 0.25s ease;
+  }
+
+  .card.open .card-header::after {
+    transform: rotate(180deg);
+  }
+
+  .card-content { 
+    display: none; 
+    padding: 18px; 
+    background: #fff; 
+    line-height: 1.7; 
+    transition: all 0.3s ease-in-out;
+  }
+
+  /* Category Classes */
+  .battery { background: var(--battery-color); }
+  .charger { background: var(--charger-color); }
+  .supply { background: var(--supply-color); }
+  .mixed { background: var(--mixed-color); }
+  .normal { background: var(--normal-color); }
+
+  /* Category Badges */
+  .badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    background: rgba(255,255,255,0.25);
+    color: white;
+  }
+
+  /* Controls & Toolbar */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+  }
+
+  .search-box { 
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 14px; 
+    border: 2px solid #ddd; 
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .search-box:focus { border-color: var(--primary); }
+
+  .filter-btn, .action-btn {
+    padding: 8px 14px;
+    border: 1px solid #ccc;
+    background: #f8f9fa;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+
+  .filter-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+
+  .btn-copy {
+    float: right;
+    margin-top: -5px;
+    padding: 5px 12px;
+    background: #eef6ff;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .btn-copy:hover { background: var(--primary); color: white; }
+
+  /* Utilities */
+  .rule { background: #fff9db; border-left: 4px solid #f1c40f; padding: 12px; font-weight: bold; margin-bottom: 15px; border-radius: 4px; }
+  .note { background: #eef6ff; padding: 12px; margin-top: 12px; border-left: 4px solid var(--charger-color); border-radius: 4px; }
+  .remark-box { background: #fdf2e9; padding: 12px; margin-top: 10px; border-left: 4px solid #e67e22; border-radius: 4px; }
+  
+  .input-group {
+    display: flex;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+  }
+  .input-group input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    flex: 1;
+  }
 </style>
 </head>
 
 <body>
 
 <div class="container">
-<h1>Baas Remote Diagnostic handbook</h1>
+  <h1>⚡ BaaS Remote Diagnostic Handbook</h1>
 
-<div class="tabs">
-  <div class="tab active" onclick="openTab(event,'quick')">Quick Troubleshooting</div>
-  <div class="tab" onclick="openTab(event,'range')">Battery Less Range</div>
-  <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
-  <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
-</div>
+  <!-- Sticky Header Tabs -->
+  <div class="sticky-nav">
+    <div class="tabs">
+      <div class="tab active" onclick="openTab(event,'quick')">Quick Troubleshooting</div>
+      <div class="tab" onclick="openTab(event,'range')">Battery Less Range</div>
+      <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
+      <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
+    </div>
+  </div>
 
-<!-- QUICK -->
-<div id="quick" class="tab-content active">
+  <!-- QUICK TROUBLESHOOTING -->
+  <div id="quick" class="tab-content active">
+    
+    <div class="toolbar">
+      <button class="action-btn" onclick="toggleAllCards('#quick')">Expand / Collapse All</button>
+    </div>
 
-<div class="card">
-<div class="card-header charger" onclick="toggle(this)">🔌 Charger Not Working</div>
-<div class="card-content">
-• Sir, kya charger me light aa rahi hai?<br>
-• Agr nahi aa rhi hai toh Sir, ek br charger cable ko nikal kr dobaara connect kijiye and dusre socket me lgaiye.<br>
-• Sir, Charger ke kaale rang ke adaptor k upr ek safed button hoga use daba k rkhiye 10sec tk aur frr check kijiye charge me lgakr.<br>
-• Sir ek pankhe ko thoda saaf kriye uss pr dhul jami ho sakti hai.
-• Sir, agar koi error aa rha hai toh btaiye error aa raha hai toh error code batayein.
-</div>
-</div>
+    <!-- CHARGER NOT WORKING -->
+    <div class="card">
+      <div class="card-header charger" onclick="toggle(this)">
+        <span class="header-title">🔌 Charger Not Working</span>
+        <span class="badge">Charger</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
+        <b>Call Script:</b><br>
+        • Sir, kya charger me light aa rahi hai?<br>
+        • Agar nahi aa rhi hai toh Sir, ek baar charger cable ko nikal kr dobaara connect kijiye and dusre socket me lgaiye.<br>
+        • Sir, Charger ke kaale rang ke adaptor ke upar ek safed button hoga use daba ke rakhiye 10sec tak aur phir check kijiye charge me lagakar.<br>
+        • Sir ek pankhe ko thoda saaf kariye uss par dhul jami ho sakti hai.<br>
+        • Sir, agar koi error aa raha hai toh error code batayein.
 
-<div class="card">
-<div class="card-header battery" onclick="toggle(this)">🔋 Battery Not Working</div>
-<div class="card-content">
-• <B>Important!:<B/> MOSFET check kro ki woh ON hai ki nahi and kya koi critical alert hai?
-• Sir, kya battery me light aa rahi hai? Agr aa rahi toh kya handle meter me bhi aa rahi hai? Agr handle meter me nahi aa rahi hai toh ek br aap Harness wire ko nikal kr saaf krke dobaara lgaiye.<br>
-• Sir, MCB ko OFF krke ON kriye.<br>
-• Sir, charger connect karke check kijiye charging ho rahi hai ya error aa raha hai.<br>
-• Sir, 15–20 min baad MCB OFF–ON karke restart kijiye.<br>
-• Sir, agar issue solve nahi hota, main F-Ops team ko assign kar raha hoon.
-</div>
-</div>
+        <div class="remark-box">
+          <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
+          <b>Hinglish System Remark:</b><br>
+          <i>"Customer reported charger not working. Advised socket change, cable reconnect, and 10-sec white button reset. Issue unresolved, assigned ticket to F-Ops team."</i>
+        </div>
+      </div>
+    </div>
 
-<div class="card">
-<div class="card-header mixed" onclick="toggle(this)">📊 SOC Meter Not Working</div>
-<div class="card-content">
-• Sir, wire harness reconnect kijiye aur vehicle restart kijiye.<br>
-• Sir, hide button press kijiye, CAN pin remove karke dobara insert kijiye.<br>
-• Sir, agar issue continue hota hai, main F-Ops assign kar raha hoon.
-<div class="note">
-SOC meter voltage aur charging level dikhata hai.
-</div>
-</div>
-</div>
+    <!-- BATTERY NOT WORKING -->
+    <div class="card">
+      <div class="card-header battery" onclick="toggle(this)">
+        <span class="header-title">🔋 Battery Not Working</span>
+        <span class="badge">Battery</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
+        <b>Call Script:</b><br>
+        • <b>Important!:</b> MOSFET check karo ki woh ON hai ki nahi and kya koi critical alert hai?<br>
+        • Sir, kya battery me light aa rahi hai? Agar aa rahi toh kya handle meter me bhi aa rahi hai? Agar handle meter me nahi aa rahi hai toh ek baar aap Harness wire ko nikal kar saaf karke dobaara lagaiye.<br>
+        • Sir, MCB ko OFF karke ON kariye.<br>
+        • Sir, charger connect karke check kijiye charging ho rahi hai ya error aa raha hai.<br>
+        • Sir, 15–20 min baad MCB OFF–ON karke restart kijiye.<br>
+        • Sir, agar issue solve nahi hota, main F-Ops team ko assign kar raha hoon.
 
-</div>
+        <div class="remark-box">
+          <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
+          <b>Hinglish System Remark:</b><br>
+          <i>"Driver complained battery output not working. Verified MOSFET status, performed Harness wire clean reconnect & MCB trip restart. Problem persists, escalated to F-Ops."</i>
+        </div>
+      </div>
+    </div>
 
-<!-- RANGE -->
-<div id="range" class="tab-content">
+    <!-- SOC METER NOT WORKING -->
+    <div class="card">
+      <div class="card-header mixed" onclick="toggle(this)">
+        <span class="header-title">📊 SOC Meter Not Working</span>
+        <span class="badge">Display / CAN</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
+        <b>Call Script:</b><br>
+        • Sir, wire harness reconnect kijiye aur vehicle restart kijiye.<br>
+        • Sir, hide button press kijiye, CAN pin remove karke dobara insert kijiye.<br>
+        • Sir, agar issue continue hota hai, main F-Ops assign kar raha hoon.
 
-<div class="card">
-<div class="card-header normal" onclick="toggle(this)">Battery Less Range – Full Script</div>
-<div class="card-content">
+        <div class="note"><b>Note:</b> SOC meter voltage aur charging level dikhata hai.</div>
 
-Sir, samajh aa raha hai aapko range kam lag rahi hai, main check karta hoon detail mein ki range kitna de rahi hai.<br><br>
+        <div class="remark-box">
+          <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
+          <b>Hinglish System Remark:</b><br>
+          <i>"SOC meter display glitch/blank issue reported. Reconnected CAN pin and harness wire, restarted vehicle. No change in status, ticket assigned to F-Ops field technician."</i>
+        </div>
+      </div>
+    </div>
 
-Sir, system ke hisaab se aapki battery ne ___ km ki range di hai, jo ki normal range mein aati hai.<br><br>
+  </div>
 
-Sir, aap battery aur charging ka kaafi achha dhyaan rakh rahe hain—yeh data mein bhi clearly dikh raha hai.<br><br>
+  <!-- BATTERY LESS RANGE -->
+  <div id="range" class="tab-content">
+    <div class="input-group">
+      <input type="number" id="rangeKm" placeholder="Enter Range in KM (e.g., 65)" oninput="updateRangeScript()">
+    </div>
 
-Kabhi-kabhi road condition, traffic, load ya tez acceleration ki wajah se battery jaldi drain hoti hui lagti hai.<br><br>
+    <div class="card open">
+      <div class="card-header normal" onclick="toggle(this)">
+        <span class="header-title">Battery Less Range – Full Script</span>
+        <span class="badge">Script</span>
+      </div>
+      <div class="card-content" style="display:block;">
+        <button class="btn-copy" onclick="copyText(this)">Copy Script</button>
+        <span id="rangeScript">
+        Sir, samajh aa raha hai aapko range kam lag rahi hai, main check karta hoon detail mein ki range kitna de rahi hai.<br><br>
+        Sir, system ke hisaab se aapki battery ne <b><span class="fill-km">[___]</span> km</b> ki range di hai, jo ki normal range mein aati hai.<br><br>
+        Sir, aap battery aur charging ka kaafi achha dhyaan rakh rahe hain—yeh data mein bhi clearly dikh raha hai.<br><br>
+        Kabhi-kabhi road condition, traffic, load ya tez acceleration ki wajah se battery jaldi drain hoti hui lagti hai.<br><br>
+        Sir, aap battery ko 100% se 20% tak ek normal ride mein use karke dekhiye.<br><br>
+        Sir, main samajh raha hoon aapko lag raha hai range kam hai, lekin ek baar 10–15 din test karke dekhiye.<br><br>
+        Battery ka point fluctuation normal hai, especially kharab road ya chadhai par.<br><br>
+        Battery bilkul theek kaam kar rahi hai—bas usage ki wajah se aisa feel ho raha hai.
+        </span>
+      </div>
+    </div>
+  </div>
 
-Sir, aap battery ko 100% se 20% tak ek normal ride mein use karke dekhiye.<br><br>
+  <!-- ERROR CODES -->
+  <div id="errors" class="tab-content">
+    <div class="rule">
+      • Same error with multiple batteries ➔ <b>Charger issue</b><br>
+      • Same battery failing on multiple chargers ➔ <b>Battery issue</b>
+    </div>
 
-Sir, main samajh raha hoon aapko lag raha hai range kam hai, lekin ek baar 10–15 din test karke dekhiye.<br><br>
+    <div class="toolbar">
+      <input type="text" class="search-box" id="errorSearch" placeholder="Search error code, description..." onkeyup="filterErrors()">
+      <button class="action-btn" onclick="toggleAllCards('#errors')">Expand / Collapse All</button>
+    </div>
 
-Battery ka point fluctuation normal hai, especially kharab road ya chadhai par.<br><br>
+    <div class="toolbar">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+      <button class="filter-btn" onclick="setFilter('supply', this)">Supply</button>
+      <button class="filter-btn" onclick="setFilter('charger', this)">Charger</button>
+      <button class="filter-btn" onclick="setFilter('battery', this)">Battery</button>
+      <button class="filter-btn" onclick="setFilter('mixed', this)">Mixed/CAN</button>
+    </div>
 
-Battery bilkul theek kaam kar rahi hai—bas usage ki wajah se aisa feel ho raha hai.
+    <div class="card error-card supply">
+      <div class="card-header supply" onclick="toggle(this)">
+        <span class="header-title">E1 - High AC Frequency</span>
+        <span class="badge">Supply</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Description:</b> Input frequency &gt;55 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur ek baar kahi aur lga k check kriye.
+      </div>
+    </div>
 
-</div>
-</div>
+    <div class="card error-card supply">
+      <div class="card-header supply" onclick="toggle(this)">
+        <span class="header-title">E2 - Low AC Frequency</span>
+        <span class="badge">Supply</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Description:</b> Input frequency &lt;45 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur thodi der baar ya kahi dusre area me lga k check kriye.
+      </div>
+    </div>
 
-</div>
+    <div class="card error-card mixed">
+      <div class="card-header mixed" onclick="toggle(this)">
+        <span class="header-title">E3 - Communication Error</span>
+        <span class="badge">CAN / Mixed</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.
+      </div>
+    </div>
 
-<!-- ERRORS FULL -->
-<div id="errors" class="tab-content">
+    <div class="card error-card charger">
+      <div class="card-header charger" onclick="toggle(this)">
+        <span class="header-title">C6 - Charger Overheating</span>
+        <span class="badge">Charger</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Heating issue<br><b>Action:</b> Sir, ye heating issue hai, aap apne charger ko thodi der kahi hawadaar jagah pr rkh dijiye jisse woh thanda ho jaae and uske baad ye apne aap theek ho jaaega jb aap ise charge me lgaenge.<br><b>Next action:</b> Assign F-Ops if not resolved.
+      </div>
+    </div>
 
-<div class="rule">
-• Same error with multiple batteries → Charger issue<br>
-• Same battery failing on multiple chargers → Battery issue
-</div>
+    <div class="card error-card supply">
+      <div class="card-header supply" onclick="toggle(this)">
+        <span class="header-title">C3 - Under Voltage Issue</span>
+        <span class="badge">Supply</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Voltage Fluctuation<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action:</b> Assign F-Ops if not resolved.
+      </div>
+    </div>
 
-<input type="text" class="search-box" placeholder="Search error..." onkeyup="searchError(this.value)">
+    <div class="card error-card supply">
+      <div class="card-header supply" onclick="toggle(this)">
+        <span class="header-title">C4 - Over Voltage Issue</span>
+        <span class="badge">Supply</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Voltage Fluctuation<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action:</b> Assign F-Ops if not resolved.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header supply" onclick="toggle(this)">E1 - High AC Frequency</div><div class="card-content"><b>Description:</b> Input frequency >55 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur ek baar kahi aur lga k check kriye.</div></div>
+    <div class="card error-card charger">
+      <div class="card-header charger" onclick="toggle(this)">
+        <span class="header-title">C7 - Charger Under Temperature</span>
+        <span class="badge">Charger</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Temp low<br><b>Action:</b> Sir, apke charger ka temprature low ho gaya hai jis wajah se ye work nahi kr rha hai, mai engineer ko assign kr deta hu.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header supply" onclick="toggle(this)">E2 - Low AC Frequency</div><div class="card-content"><b>Description:</b> Input frequency <45 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur thodi der baar ya kahi dusre area me lga k check kriye.</div></div>
+    <div class="card error-card battery">
+      <div class="card-header battery" onclick="toggle(this)">
+        <span class="header-title">E4 - Battery Disconnected</span>
+        <span class="badge">Battery</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> DC connector/BMS cutoff<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">E3 - Communication Error</div><div class="card-content"><b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.</div></div>
+    <div class="card error-card battery">
+      <div class="card-header battery" onclick="toggle(this)">
+        <span class="header-title">E5 - Battery Dead</span>
+        <span class="badge">Battery</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Dead battery<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">E3 - Communication Error</div><div class="card-content"><b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.</div></div>
+    <div class="card error-card charger">
+      <div class="card-header charger" onclick="toggle(this)">
+        <span class="header-title">E6 - Reverse Battery</span>
+        <span class="badge">Charger</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Polarity swapped<br><b>Action:</b> Sir, charger ko sahi "+" aur "-" se connect kijiye.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C6 - Charger is over heating</div><div class="card-content"><b>Remarks:</b>Heating issue<br><b>Action:</b> Sir, ye heating issue hai, aap apne charger ko thodi der kahi hawadaar jagah pr rkh dijiye jisse woh thanda ho jaae and uske baad ye apne aap theek ho jaaega jb aap ise charge me lgaenge.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+    <div class="card error-card battery">
+      <div class="card-header battery" onclick="toggle(this)">
+        <span class="header-title">P2 - CC1 Time Exceeded</span>
+        <span class="badge">Battery</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> &gt;2.5 hrs<br><b>Action:</b> Sir, ek baar dusri battery charge karke dekhiye.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C3 - Under Voltage issue</div><div class="card-content"><b>Remarks:</b>Under Voltage issue<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+    <div class="card error-card battery">
+      <div class="card-header battery" onclick="toggle(this)">
+        <span class="header-title">B5 - Battery Over Temp</span>
+        <span class="badge">Battery</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Buzzer sounding<br><b>Action:</b> Sir, battery ko rest de dijiye, agar issue continue hota hai toh main F-Ops assign kar dunga.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C4 - Over Voltage issue</div><div class="card-content"><b>Remarks:</b>Over Voltage issue<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+    <div class="card error-card normal">
+      <div class="card-header normal" onclick="toggle(this)">
+        <span class="header-title">FC - Full Charge</span>
+        <span class="badge">Normal</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+        <b>Remarks:</b> Fully charged<br><b>Action:</b> Sir, battery fully charge ho gayi hai, remove kar dijiye.
+      </div>
+    </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">C7 - Charger is under temprature</div><div class="card-content"><b>Remarks:</b>Heating issue<br><b>Action:</b> Sir, apke charger ka temprature low ho gaya hai jis wajah se ye work nahi kr rha hai, mai engineer ko assign kr deta hu.<br><b>Next action if not resolved:</b>Assign fops<br></div></div>
+  </div>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">E4 - Battery Disconnected</div><div class="card-content"><b>Remarks:</b> DC connector/BMS cutoff<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.</div></div>
+  <!-- WELCOME CALL SCRIPT -->
+  <div id="welcome" class="tab-content">
+    <div class="input-group">
+      <input type="text" id="agentName" placeholder="Agent Name" oninput="updateWelcomeScript()">
+      <input type="text" id="driverName" placeholder="Driver Name" oninput="updateWelcomeScript()">
+    </div>
 
-<div class="card error-card"><div class="card-header battery" onclick="toggle(this)">E5 - Battery Dead</div><div class="card-content"><b>Remarks:</b> Dead battery<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.</div></div>
+    <div class="card open">
+      <div class="card-header normal" onclick="toggle(this)">
+        <span class="header-title">📞 Welcome Call Script</span>
+        <span class="badge">Script</span>
+      </div>
+      <div class="card-content" style="display:block;">
+        <button class="btn-copy" onclick="copyText(this)">Copy Script</button>
+        <div id="welcomeScript">
+          <b>Introduction</b><br>
+          Namaskar Sir, main Battery Smart se <b><span class="fill-agent">[Caller Name]</span></b> bol raha hoon. Kya meri baat <b><span class="fill-driver">[Driver Name]</span></b> se ho rahi hai?<br>
+          Sir, system me check kar raha hoon ki aap recently Battery Smart ke saath onboard hue hain. Sabse pehle, aapka humare saath judne ke liye bahut-bahut dhanyavaad.<br>
+          Kya abhi 2–3 minute baat karne ke liye theek samay hai?<br><br>
 
-<div class="card error-card"><div class="card-header charger" onclick="toggle(this)">E6 - Reverse Battery</div><div class="card-content"><b>Remarks:</b> Polarity swapped<br><b>Action:</b> Sir, charger ko sahi "+" aur "-" se connect kijiye.</div></div>
+          <b>Objective of Call</b><br>
+          Sir, ye ek welcome call hai jisme main aapko battery aur charger ko sahi tarike se use karne ki basic information share karunga.<br>
+          Isse aapko better battery range milegi aur future me issues kam aayenge. Agar beech me koi bhi doubt aaye, aap bina hesitation ke pooch sakte hain.<br><br>
 
-<div class="card error-card"><div class="card-header mixed" onclick="toggle(this)">P2 - CC1 Time Exceeded</div><div class="card-content"><b>Remarks:</b> >2.5 hrs<br><b>Action:</b> Sir, ek baar dusri battery charge karke dekhiye.</div></div>
+          <b>Battery Usage Tips</b><br>
+          • Sir, kyunki aapne nayi battery li hai, sabse pehle ise full charge (FC) tak charge karein.<br>
+          • Battery ko kabhi bhi completely discharge na hone dein — jaise hi 20% SOC aaye, charging laga dein.<br>
+          • Hamesha Battery Smart ka original charger hi use karein.<br>
+          • Third-party charger ya repair se bachhein, isse battery damage ho sakti hai.<br><br>
 
-<div class="card error-card"><div class="card-header battery" onclick="toggle(this)">B5 - Battery Over Temp</div><div class="card-content"><b>Remarks:</b> Buzzer<br><b>Action:</b> Sir, battery ko rest de dijiye, agar issue continue hota hai toh main F-Ops assign kar dunga.</div></div>
+          <b>Charger Usage Tips</b><br>
+          • Charging hamesha dry aur ventilated jagah par karein.<br>
+          • Charger lagate hi indicator light ON honi chahiye.<br>
+          • Charger ki lead aur plug properly connected hone chahiye.<br>
+          • Switch board ON hona zaroori hai.<br>
+          Ek important baat — agar charger lost ya stolen ho jata hai, to company policy ke according ₹10,000 charge lagta hai.<br><br>
 
-<div class="card error-card"><div class="card-header normal" onclick="toggle(this)">FC - Full Charge</div><div class="card-content"><b>Remarks:</b> Fully charged<br><b>Action:</b> Sir, battery fully charge ho gayi hai, remove kar dijiye.</div></div>
+          <b>How to Get Better Battery Range</b><br>
+          • Battery ko hamesha 100% charge karke use karein.<br>
+          • Vehicle ko overload na karein — ideal load driver + 3–4 passengers tak rakhein.<br>
+          • Tyre pressure 40–45 PSI maintain rakhein.<br>
+          • Vehicle ka regular maintenance karte rahein.<br>
+          • Sudden acceleration aur rough driving se bachein.<br><br>
 
-</div>
+          <b>MCB Handling</b><br>
+          • Junction box ko hamesha properly cover karke rakhein.<br>
+          • Charging ke time MCB OFF rakhein.<br><br>
 
-<!-- ✅ UPDATED WELCOME SCRIPT -->
-<div id="welcome" class="tab-content">
+          <b>CAN Wire Check</b><br>
+          • Battery connector wire properly connected honi chahiye.<br>
+          • Meter par CAN communication light blink karni chahiye.<br><br>
 
-<div class="card">
-<div class="card-header normal" onclick="toggle(this)">📞 Welcome Call Script</div>
-<div class="card-content">
+          <b>Common Issues & Quick Checks</b><br>
+          1️⃣ Wire harness connection loose to nahi hai<br>
+          2️⃣ MCB trip ya OFF to nahi hai<br>
+          3️⃣ Battery me charge hai ya nahi<br><br>
 
-<b>Introduction</b><br><br>
-Namaskar Sir, main Battery Smart se [Caller Name] bol raha hoon. Kya meri baat [Driver Name] se ho rahi hai?<br><br>
-Sir, system me check kar raha hoon ki aap recently Battery Smart ke saath onboard hue hain. Sabse pehle, aapka humare saath judne ke liye bahut-bahut dhanyavaad.<br><br>
-Kya abhi 2–3 minute baat karne ke liye theek samay hai?<br><br>
+          <b>Support Process</b><br>
+          • Driver App se request raise karein<br>
+          • Ya support number 8055300400 par call karein<br><br>
 
-<b>Objective of Call</b><br><br>
-Sir, ye ek welcome call hai jisme main aapko battery aur charger ko sahi tarike se use karne ki basic information share karunga.<br><br>
-Isse aapko better battery range milegi aur future me issues kam aayenge. Agar beech me koi bhi doubt aaye, aap bina hesitation ke pooch sakte hain.<br><br>
-
-<b>Battery Usage Tips</b><br><br>
-• Sir, kyunki aapne nayi battery li hai, sabse pehle ise full charge (FC) tak charge karein.<br>
-• Battery ko kabhi bhi completely discharge na hone dein — jaise hi 20% SOC aaye, charging laga dein.<br>
-• Hamesha Battery Smart ka original charger hi use karein.<br>
-• Third-party charger ya repair se bachhein, isse battery damage ho sakti hai.<br><br>
-
-<b>Charger Usage Tips</b><br><br>
-• Charging hamesha dry aur ventilated jagah par karein.<br>
-• Charger lagate hi indicator light ON honi chahiye.<br>
-• Charger ki lead aur plug properly connected hone chahiye.<br>
-• Switch board ON hona zaroori hai.<br><br>
-Ek important baat — agar charger lost ya stolen ho jata hai, to company policy ke according ₹10,000 charge lagta hai.<br><br>
-
-<b>How to Get Better Battery Range</b><br><br>
-• Battery ko hamesha 100% charge karke use karein.<br>
-• Vehicle ko overload na karein — ideal load driver + 3–4 passengers tak rakhein.<br>
-• Tyre pressure 40–45 PSI maintain rakhein.<br>
-• Vehicle ka regular maintenance karte rahein.<br>
-• Sudden acceleration aur rough driving se bachein.<br><br>
-
-<b>MCB Handling</b><br><br>
-• Junction box ko hamesha properly cover karke rakhein.<br>
-• Charging ke time MCB OFF rakhein.<br><br>
-
-<b>CAN Wire Check</b><br><br>
-• Battery connector wire properly connected honi chahiye.<br>
-• Meter par CAN communication light blink karni chahiye.<br><br>
-
-<b>Common Issues & Quick Checks</b><br><br>
-1️⃣ Wire harness connection loose to nahi hai<br>
-2️⃣ MCB trip ya OFF to nahi hai<br>
-3️⃣ Battery me charge hai ya nahi<br><br>
-
-<b>Support Process</b><br><br>
-• Driver App se request raise karein<br>
-• Ya support number 8055300400 par call karein<br><br>
-
-<b>Closing Pitch</b><br><br>
-Sir, ummeed hai jo information maine share ki hai wo aapke liye helpful rahegi.<br>
-Safe driving karein — aapka din shubh rahe!
-
-</div>
-</div>
-
-</div>
+          <b>Closing Pitch</b><br>
+          Sir, ummeed hai jo information maine share ki hai wo aapke liye helpful rahegi.<br>
+          Safe driving karein — aapka din shubh rahe!
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>
 
 <script>
-function toggle(el){
- let c=el.nextElementSibling;
- c.style.display=c.style.display==="block"?"none":"block";
+let currentFilter = 'all';
+
+function toggle(el) {
+  let card = el.parentElement;
+  let content = el.nextElementSibling;
+  
+  if (content.style.display === "block") {
+    content.style.display = "none";
+    card.classList.remove("open");
+  } else {
+    content.style.display = "block";
+    card.classList.add("open");
+  }
 }
-function openTab(evt,tab){
- document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
- document.querySelectorAll(".tab-content").forEach(c=>c.classList.remove("active"));
- evt.target.classList.add("active");
- document.getElementById(tab).classList.add("active");
+
+function openTab(evt, tabId) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+  evt.target.classList.add("active");
+  document.getElementById(tabId).classList.add("active");
 }
-function searchError(input){
- let cards=document.querySelectorAll(".error-card");
- cards.forEach(card=>{
-   let text=card.innerText.toLowerCase();
-   card.style.display=text.includes(input.toLowerCase())?"block":"none";
- });
+
+function filterErrors() {
+  let input = document.getElementById("errorSearch").value.toLowerCase();
+  let cards = document.querySelectorAll(".error-card");
+
+  cards.forEach(card => {
+    let text = card.innerText.toLowerCase();
+    let matchesSearch = text.includes(input);
+    let matchesFilter = (currentFilter === 'all') || card.classList.contains(currentFilter);
+
+    if (matchesSearch && matchesFilter) {
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+
+function setFilter(category, btn) {
+  currentFilter = category;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterErrors();
+}
+
+function toggleAllCards(tabSelector) {
+  let cards = document.querySelectorAll(`${tabSelector} .card`);
+  let shouldOpen = Array.from(cards).some(card => {
+    let content = card.querySelector('.card-content');
+    return content.style.display !== 'block';
+  });
+
+  cards.forEach(card => {
+    let content = card.querySelector('.card-content');
+    if (shouldOpen) {
+      content.style.display = 'block';
+      card.classList.add('open');
+    } else {
+      content.style.display = 'none';
+      card.classList.remove('open');
+    }
+  });
+}
+
+function updateRangeScript() {
+  let val = document.getElementById('rangeKm').value || '___';
+  document.querySelectorAll('.fill-km').forEach(el => el.innerText = val);
+}
+
+function updateWelcomeScript() {
+  let agent = document.getElementById('agentName').value || '[Caller Name]';
+  let driver = document.getElementById('driverName').value || '[Driver Name]';
+  
+  document.querySelectorAll('.fill-agent').forEach(el => el.innerText = agent);
+  document.querySelectorAll('.fill-driver').forEach(el => el.innerText = driver);
+}
+
+function copyText(btn) {
+  let container = btn.parentElement.cloneNode(true);
+  let btnsInCopy = container.querySelectorAll('.btn-copy');
+  btnsInCopy.forEach(b => b.remove());
+  
+  let text = container.innerText.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    let originalText = btn.innerText;
+    btn.innerText = "Copied!";
+    setTimeout(() => btn.innerText = originalText, 1500);
+  });
 }
 </script>
 
