@@ -20,6 +20,11 @@
     --supply-color: #f39c12;
     --mixed-color: #8e44ad;
     --normal-color: #27ae60;
+    
+    /* Tier Colors */
+    --bronze-color: #cd7f32;
+    --silver-color: #7f8c8d;
+    --gold-color: #f1c40f;
   }
 
   body { 
@@ -58,10 +63,12 @@
     padding: 6px;
     border-radius: var(--border-radius);
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    flex-wrap: wrap;
   }
 
   .tab { 
     flex: 1; 
+    min-width: 120px;
     padding: 12px; 
     cursor: pointer; 
     text-align: center; 
@@ -133,6 +140,9 @@
   .supply { background: var(--supply-color); }
   .mixed { background: var(--mixed-color); }
   .normal { background: var(--normal-color); }
+  .bronze { background: var(--bronze-color); }
+  .silver { background: var(--silver-color); }
+  .gold { background: #d4ac0d; }
 
   /* Category Badges */
   .badge {
@@ -200,11 +210,12 @@
 
   .btn-copy:hover { background: var(--primary); color: white; }
 
-  /* Utilities */
+  /* Utilities & Tables */
   .rule { background: #fff9db; border-left: 4px solid #f1c40f; padding: 12px; font-weight: bold; margin-bottom: 15px; border-radius: 4px; }
   .note { background: #eef6ff; padding: 12px; margin-top: 12px; border-left: 4px solid var(--charger-color); border-radius: 4px; }
   .remark-box { background: #fdf2e9; padding: 12px; margin-top: 10px; border-left: 4px solid #e67e22; border-radius: 4px; }
-  
+  .alert-box { background: #fbeee6; border-left: 4px solid #c0392b; padding: 12px; font-weight: bold; margin: 15px 0; border-radius: 4px; color: #900c3f; }
+
   .input-group {
     display: flex;
     gap: 10px;
@@ -218,6 +229,43 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     flex: 1;
+  }
+
+  /* Data Tables */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 14px;
+    text-align: left;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .styled-table thead tr {
+    background-color: var(--primary);
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+  }
+
+  .styled-table th, .styled-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #dddddd;
+  }
+
+  .styled-table tbody tr:nth-of-type(even) {
+    background-color: #f8f9fa;
+  }
+
+  .styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid var(--primary);
+  }
+
+  .styled-table tbody tr.highlight-row {
+    background-color: #eaf2f8;
+    font-weight: bold;
   }
 </style>
 </head>
@@ -234,12 +282,13 @@
       <div class="tab" onclick="openTab(event,'range')">Battery Less Range</div>
       <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
       <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
+      <div class="tab" onclick="openTab(event,'charges')">Service & Charges</div>
+      <div class="tab" onclick="openTab(event,'smp')">SMP Plan</div>
     </div>
   </div>
 
   <!-- QUICK TROUBLESHOOTING -->
   <div id="quick" class="tab-content active">
-    
     <div class="toolbar">
       <button class="action-btn" onclick="toggleAllCards('#quick')">Expand / Collapse All</button>
     </div>
@@ -313,7 +362,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- BATTERY LESS RANGE -->
@@ -505,7 +553,6 @@
         <b>Remarks:</b> Fully charged<br><b>Action:</b> Sir, battery fully charge ho gayi hai, remove kar dijiye.
       </div>
     </div>
-
   </div>
 
   <!-- WELCOME CALL SCRIPT -->
@@ -575,6 +622,168 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- SERVICE & CONSUMABLE CHARGES -->
+  <div id="charges" class="tab-content">
+    <h2>🛠️ Service & Consumable Charges</h2>
+    <p>Detailed breakdown of replacement costs and out-of-tenure service charges.</p>
+
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Consumable Name</th>
+          <th>Charges (INR)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Harness Replaced</td><td>₹400</td></tr>
+        <tr><td>MCB properly fitted</td><td>₹50</td></tr>
+        <tr><td>MCB Repaired</td><td>₹50</td></tr>
+        <tr><td>MCB Replaced</td><td>₹100</td></tr>
+        <tr><td>Meter Repaired</td><td>₹50</td></tr>
+        <tr><td>Meter Replaced</td><td>₹200</td></tr>
+        <tr><td>No issue found - Battery or Charger</td><td>₹0</td></tr>
+        <tr><td>No issue found - Other issues</td><td>₹40</td></tr>
+        <tr><td>Stolen CAN Wire - New Provided</td><td>₹100</td></tr>
+        <tr><td>Stolen Harness - New Provided</td><td>₹800</td></tr>
+        <tr><td>Stolen MCB - New Provided</td><td>₹100</td></tr>
+        <tr><td>Stolen Meter - New Provided</td><td>₹500</td></tr>
+        <tr><td>Wiring Repaired</td><td>₹50</td></tr>
+        <tr><td>Wiring Replaced</td><td>₹100</td></tr>
+        <tr><td>Stolen BaaS Charger - New Provided</td><td>₹10,000</td></tr>
+        <tr><td>Adaptor Replace</td><td>₹200</td></tr>
+        <tr class="highlight-row"><td>Charger replacement (Out tenure)</td><td>₹100</td></tr>
+        <tr class="highlight-row"><td>Battery Replacement (Out tenure)</td><td>₹200</td></tr>
+        <tr class="highlight-row"><td>Service battery needed (Out of tenure)</td><td>₹100</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rule">
+      <b>Important Rules:</b><br>
+      1. If the battery or charger is replaced, service charges will not be applicable.<br>
+      2. No charges applicable within one month of onboarding.<br>
+      3. In case no issue is found, no service charges will be applicable to the driver.
+    </div>
+  </div>
+
+  <!-- SMP PLAN -->
+  <div id="smp" class="tab-content">
+    <h2>🛡️ Smart Maintenance Plan (SMP)</h2>
+    <p>Overview of plans, benefits, and sales call scripts for out-of-tenure drivers.</p>
+
+    <!-- SMP Overview Table -->
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Plan</th>
+          <th>Duration</th>
+          <th>Visits</th>
+          <th>Asset Replacement*</th>
+          <th>Consumables Replacement**</th>
+          <th>SMP Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>🥉 Bronze</b></td>
+          <td>3 Months</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td><b>₹400</b></td>
+        </tr>
+        <tr>
+          <td><b>🥈 Silver</b></td>
+          <td>6 Months</td>
+          <td>8</td>
+          <td>2</td>
+          <td>2</td>
+          <td><b>₹700</b></td>
+        </tr>
+        <tr>
+          <td><b>🥇 Gold</b></td>
+          <td>1 Year</td>
+          <td>16</td>
+          <td>4</td>
+          <td>4</td>
+          <td><b>₹1,200</b></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="alert-box">
+      ⚠️ <b>Important Rule for Calling:</b> Calling mein “₹3,500–4,000 pakka bachenge” mat bolna. Better hai “maximum benefit” ya “up to ₹3,440” bolna, kyunki actual saving tabhi hogi jab driver included services/replacements use karega.
+    </div>
+
+    <div class="toolbar">
+      <button class="action-btn" onclick="toggleAllCards('#smp')">Expand / Collapse All Pitch Cards</button>
+    </div>
+
+    <!-- Opening Pitch -->
+    <div class="card open">
+      <div class="card-header normal" onclick="toggle(this)">
+        <span class="header-title">💬 Opening Pitch (Tenure Complete)</span>
+        <span class="badge">Intro</span>
+      </div>
+      <div class="card-content" style="display:block;">
+        <button class="btn-copy" onclick="copyText(this)">Copy Intro</button>
+        “Sir, namaste. Jaisa main check kar paa raha hoon, aapka tenure complete ho chuka hai. Ab tenure complete hone ke baad agar battery ya charger mein koi problem aati hai, toh uska charge aapko dena padega — battery ke ₹200 aur charger ke ₹100.<br><br>
+        Lekin sir, in extra kharchon se bachne ke liye humare paas ek SMP plan hai. Isme aapko service visits ke saath battery/charger aur meter, harness ya MCB replacement ka benefit bhi milta hai. Matlab jab zarurat pade, toh alag-alag paise dene ki zarurat nahi padegi.”
+      </div>
+    </div>
+
+    <!-- Bronze Plan Pitch -->
+    <div class="card">
+      <div class="card-header bronze" onclick="toggle(this)">
+        <span class="header-title">🥉 Bronze Plan Pitch – ₹400</span>
+        <span class="badge">3 Months</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
+        “Sir, pehla plan ₹400 ka hai. Isme aapko 3 mahine tak 4 service visits free milengi, yani ₹160 ki saving. Saath mein 1 baar battery ya charger replacement free milega, jisse ₹200 tak ki saving hogi. Aur 1 consumable — SOC meter, harness wire ya MCB — bhi free milega, jisse ₹500 tak ki saving ho sakti hai.<br><br>
+        Matlab sir, ₹400 ke plan mein aapko maximum ₹860 tak ka benefit mil sakta hai.”
+      </div>
+    </div>
+
+    <!-- Silver Plan Pitch -->
+    <div class="card">
+      <div class="card-header silver" onclick="toggle(this)">
+        <span class="header-title">🥈 Silver Plan Pitch – ₹700</span>
+        <span class="badge">6 Months</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
+        “Sir, doosra plan ₹700 ka hai, jo 6 mahine ke liye hai. Isme 8 service visits free milengi, yani ₹320 ki saving. 2 baar battery ya charger replacement milega, yani ₹400 ki saving. Aur 2 consumables — meter, harness ya MCB — free milenge, jisse ₹1,000 tak ki saving ho sakti hai.<br><br>
+        Yani ₹700 mein maximum ₹1,720 tak ka benefit mil sakta hai.”
+      </div>
+    </div>
+
+    <!-- Gold Plan Pitch -->
+    <div class="card">
+      <div class="card-header gold" onclick="toggle(this)">
+        <span class="header-title">🥇 Gold Plan Pitch – ₹1,200</span>
+        <span class="badge">1 Year</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
+        “Aur sir, agar aap ek saal ke liye tension-free rehna chahte hain, toh Gold plan ₹1,200 ka hai. Isme 16 service visits free milengi, yani ₹640 ki saving. 4 baar battery ya charger replacement milega, yani ₹800 ki saving. Aur 4 consumables free milenge, jisse ₹2,000 tak ki saving ho sakti hai.<br><br>
+        Matlab sir, ₹1,200 ke plan mein maximum ₹3,440 ka direct benefit banta hai. Agar consumables ki actual replacement cost ₹500 se zyada hoti hai, toh benefit ₹4,000 ke aas-paas bhi ja sakta hai.”
+      </div>
+    </div>
+
+    <!-- Closing Pitch -->
+    <div class="card">
+      <div class="card-header normal" onclick="toggle(this)">
+        <span class="header-title">🎯 Closing Pitch</span>
+        <span class="badge">Closing</span>
+      </div>
+      <div class="card-content">
+        <button class="btn-copy" onclick="copyText(this)">Copy Closing</button>
+        “Sir, aapko baar-baar ₹40, ₹200 ya ₹100 alag se dene ki tension nahi rahegi. Aap ek baar plan leke apni maintenance cost ko manage kar sakte hain. Aapke usage ke hisaab se main Bronze, Silver ya Gold mein se kaunsa plan kar doon?”
+      </div>
+    </div>
+
   </div>
 
 </div>
