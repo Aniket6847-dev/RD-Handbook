@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BaaS Remote Diagnostic Handbook</title>
-
+<title>Unified Remote Diagnostic Handbook (BaaS & MaaS)</title>
 <style>
   :root {
     --primary: #0066cc;
@@ -24,8 +23,10 @@
     /* Tier Colors */
     --bronze-color: #cd7f32;
     --silver-color: #7f8c8d;
-    --gold-color: #f1c40f;
+    --gold-color: #d4ac0d;
   }
+
+  * { box-sizing: border-box; }
 
   body { 
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
@@ -40,13 +41,56 @@
     padding: 20px; 
   }
 
+  /* Main Top Header Navigation */
+  .main-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    background: #1a252f;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  }
+
+  .main-nav-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    background: #34495e;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .main-nav-btn:hover {
+    background: #4a6278;
+  }
+
+  .main-nav-btn.active {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,102,204,0.4);
+  }
+
+  /* Sub-Section Display */
+  .section-container {
+    display: none;
+  }
+
+  .section-container.active {
+    display: block;
+  }
+
   h1 { 
     text-align: center; 
     color: var(--primary-dark);
     margin-bottom: 20px;
   }
 
-  /* Sticky Header & Tabs */
+  /* Sticky Header & Tabs for BaaS */
   .sticky-nav {
     position: sticky;
     top: 0;
@@ -134,6 +178,10 @@
     transition: all 0.3s ease-in-out;
   }
 
+  .card.open .card-content {
+    display: block;
+  }
+
   /* Category Classes */
   .battery { background: var(--battery-color); }
   .charger { background: var(--charger-color); }
@@ -142,7 +190,7 @@
   .normal { background: var(--normal-color); }
   .bronze { background: var(--bronze-color); }
   .silver { background: var(--silver-color); }
-  .gold { background: #d4ac0d; }
+  .gold { background: var(--gold-color); }
 
   /* Category Badges */
   .badge {
@@ -213,7 +261,7 @@
   /* Utilities & Tables */
   .rule { background: #fff9db; border-left: 4px solid #f1c40f; padding: 12px; font-weight: bold; margin-bottom: 15px; border-radius: 4px; }
   .note { background: #eef6ff; padding: 12px; margin-top: 12px; border-left: 4px solid var(--charger-color); border-radius: 4px; }
-  .remark-box { background: #fdf2e9; padding: 12px; margin-top: 10px; border-left: 4px solid #e67e22; border-radius: 4px; }
+  .remark-box { background: #fdf2e9; padding: 12px; margin-top: 10px; border-left: 4px solid #e67e22; border-radius: 4px; position: relative; }
   .alert-box { background: #fbeee6; border-left: 4px solid #c0392b; padding: 12px; font-weight: bold; margin: 15px 0; border-radius: 4px; color: #900c3f; }
 
   .input-group {
@@ -267,618 +315,1059 @@
     background-color: #eaf2f8;
     font-weight: bold;
   }
+
+  /* MaaS Specific Styles */
+  .maas-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 16px 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+  }
+  .maas-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--primary-dark);
+  }
+  .maas-logo-icon {
+    width: 38px;
+    height: 38px;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-weight: 900;
+  }
+  .maas-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    flex: 1;
+    background: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .stat-num {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--primary);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .maas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+  }
+
+  .maas-card {
+    background: white;
+    border-radius: var(--border-radius);
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .maas-card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .maas-card-cat {
+    font-size: 10px;
+    text-transform: uppercase;
+    background: #eef6ff;
+    color: var(--primary);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+  }
+
+  .maas-steps {
+    margin: 10px 0;
+    padding-left: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .maas-remarks {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    margin-top: 10px;
+    border-left: 3px solid var(--primary);
+  }
+
+  .maas-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 12px;
+  }
+
+  .maas-btn {
+    flex: 1;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .btn-call { background: #27ae60; color: white; }
+  .btn-visit { background: #e74c3c; color: white; }
+  .btn-steps { background: #34495e; color: white; }
+
+  /* Toast Popup */
+  #toast {
+    visibility: hidden;
+    min-width: 250px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 12px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%);
+    font-size: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  }
+
+  #toast.show {
+    visibility: visible;
+    animation: fadein 0.3s, fadeout 0.3s 2.2s;
+  }
+
+  @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+  @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <h1>⚡ BaaS Remote Diagnostic Handbook</h1>
 
-  <!-- Sticky Header Tabs -->
-  <div class="sticky-nav">
-    <div class="tabs">
-      <div class="tab active" onclick="openTab(event,'quick')">Quick Troubleshooting</div>
-      <div class="tab" onclick="openTab(event,'range')">Battery Less Range</div>
-      <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
-      <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
-      <div class="tab" onclick="openTab(event,'charges')">Service & Charges</div>
-      <div class="tab" onclick="openTab(event,'smp')">SMP Plan</div>
-    </div>
+  <!-- Primary Top Level Switcher -->
+  <div class="main-nav">
+    <button class="main-nav-btn active" onclick="switchMainTab('baas', this)">⚡ BaaS Remote Diagnostic</button>
+    <button class="main-nav-btn" onclick="switchMainTab('maas', this)">🛵 MaaS Remote Diagnostic</button>
   </div>
 
-  <!-- QUICK TROUBLESHOOTING -->
-  <div id="quick" class="tab-content active">
-    <div class="toolbar">
-      <button class="action-btn" onclick="toggleAllCards('#quick')">Expand / Collapse All</button>
+  <!-- ================= BAAS REMOTE DIAGNOSTIC SECTION ================= -->
+  <div id="baas-section" class="section-container active">
+    <h1>⚡ BaaS Remote Diagnostic Handbook</h1>
+
+    <!-- Sticky Header Tabs -->
+    <div class="sticky-nav">
+      <div class="tabs">
+        <div class="tab active" onclick="openTab(event,'quick')">Quick Troubleshooting</div>
+        <div class="tab" onclick="openTab(event,'range')">Battery Less Range</div>
+        <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
+        <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
+        <div class="tab" onclick="openTab(event,'charges')">Service & Charges</div>
+        <div class="tab" onclick="openTab(event,'smp')">SMP Plan</div>
+      </div>
     </div>
 
-    <!-- CHARGER NOT WORKING -->
-    <div class="card">
-      <div class="card-header charger" onclick="toggle(this)">
-        <span class="header-title">🔌 Charger Not Working</span>
-        <span class="badge">Charger</span>
+    <!-- QUICK TROUBLESHOOTING -->
+    <div id="quick" class="tab-content active">
+      <div class="toolbar">
+        <button class="action-btn" onclick="toggleAllCards('#quick')">Expand / Collapse All</button>
       </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
-        <b>Call Script:</b><br>
-        • Sir, kya charger me light aa rahi hai?<br>
-        • Agar nahi aa rhi hai toh Sir, ek baar charger cable ko nikal kr dobaara connect kijiye and dusre socket me lgaiye.<br>
-        • Sir, Charger ke kaale rang ke adaptor ke upar ek safed button hoga use daba ke rakhiye 10sec tak aur phir check kijiye charge me lagakar.<br>
-        • Sir ek pankhe ko thoda saaf kariye uss par dhul jami ho sakti hai.<br>
-        • Sir, agar koi error aa raha hai toh error code batayein.
 
-        <div class="remark-box">
-          <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
-          <b>Hinglish System Remark:</b><br>
-          <i>"Customer reported charger not working. Advised socket change, cable reconnect, and 10-sec white button reset. Issue unresolved, assigned ticket to F-Ops team."</i>
+      <!-- CHARGER NOT WORKING -->
+      <div class="card">
+        <div class="card-header charger" onclick="toggle(this)">
+          <span class="header-title">🔌 Charger Not Working</span>
+          <span class="badge">Charger</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
+          <b>Call Script:</b><br>
+          • Sir, kya charger me light aa rahi hai?<br>
+          • Agar nahi aa rhi hai toh Sir, ek baar charger cable ko nikal kr dobaara connect kijiye and dusre socket me lgaiye.<br>
+          • Sir, Charger ke kaale rang ke adaptor ke upar ek safed button hoga use daba ke rakhiye 10sec tak aur phir check kijiye charge me lagakar.<br>
+          • Sir ek pankhe ko thoda saaf kariye uss par dhul jami ho sakti hai.<br>
+          • Sir, agar koi error aa raha hai toh error code batayein.
+
+          <div class="remark-box">
+            <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
+            <b>Hinglish System Remark:</b><br>
+            <i>"Customer reported charger not working. Advised socket change, cable reconnect, and 10-sec white button reset. Issue unresolved, assigned ticket to F-Ops team."</i>
+          </div>
+        </div>
+      </div>
+
+      <!-- BATTERY NOT WORKING -->
+      <div class="card">
+        <div class="card-header battery" onclick="toggle(this)">
+          <span class="header-title">🔋 Battery Not Working</span>
+          <span class="badge">Battery</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
+          <b>Call Script:</b><br>
+          • <b>Important!:</b> MOSFET check karo ki woh ON hai ki nahi and kya koi critical alert hai?<br>
+          • Sir, kya battery me light aa rahi hai? Agar aa rahi toh kya handle meter me bhi aa rahi hai? Agar handle meter me nahi aa rahi hai toh ek baar aap Harness wire ko nikal kar saaf karke dobaara lagaiye.<br>
+          • Sir, MCB ko OFF karke ON kariye.<br>
+          • Sir, charger connect karke check kijiye charging ho rahi hai ya error aa raha hai.<br>
+          • Sir, 15–20 min baad MCB OFF–ON karke restart kijiye.<br>
+          • Sir, agar issue solve nahi hota, main F-Ops team ko assign kar raha hoon.
+
+          <div class="remark-box">
+            <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
+            <b>Hinglish System Remark:</b><br>
+            <i>"Driver complained battery output not working. Verified MOSFET status, performed Harness wire clean reconnect & MCB trip restart. Problem persists, escalated to F-Ops."</i>
+          </div>
+        </div>
+      </div>
+
+      <!-- SOC METER NOT WORKING -->
+      <div class="card">
+        <div class="card-header mixed" onclick="toggle(this)">
+          <span class="header-title">📊 SOC Meter Not Working</span>
+          <span class="badge">Display / CAN</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
+          <b>Call Script:</b><br>
+          • Sir, wire harness reconnect kijiye aur vehicle restart kijiye.<br>
+          • Sir, hide button press kijiye, CAN pin remove karke dobara insert kijiye.<br>
+          • Sir, agar issue continue hota hai, main F-Ops assign kar raha hoon.
+
+          <div class="note"><b>Note:</b> SOC meter voltage aur charging level dikhata hai.</div>
+
+          <div class="remark-box">
+            <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
+            <b>Hinglish System Remark:</b><br>
+            <i>"SOC meter display glitch/blank issue reported. Reconnected CAN pin and harness wire, restarted vehicle. No change in status, ticket assigned to F-Ops field technician."</i>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- BATTERY NOT WORKING -->
-    <div class="card">
-      <div class="card-header battery" onclick="toggle(this)">
-        <span class="header-title">🔋 Battery Not Working</span>
-        <span class="badge">Battery</span>
+    <!-- BATTERY LESS RANGE -->
+    <div id="range" class="tab-content">
+      <div class="input-group">
+        <input type="number" id="rangeKm" placeholder="Enter Range in KM (e.g., 65)" oninput="updateRangeScript()">
       </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
-        <b>Call Script:</b><br>
-        • <b>Important!:</b> MOSFET check karo ki woh ON hai ki nahi and kya koi critical alert hai?<br>
-        • Sir, kya battery me light aa rahi hai? Agar aa rahi toh kya handle meter me bhi aa rahi hai? Agar handle meter me nahi aa rahi hai toh ek baar aap Harness wire ko nikal kar saaf karke dobaara lagaiye.<br>
-        • Sir, MCB ko OFF karke ON kariye.<br>
-        • Sir, charger connect karke check kijiye charging ho rahi hai ya error aa raha hai.<br>
-        • Sir, 15–20 min baad MCB OFF–ON karke restart kijiye.<br>
-        • Sir, agar issue solve nahi hota, main F-Ops team ko assign kar raha hoon.
 
-        <div class="remark-box">
-          <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
-          <b>Hinglish System Remark:</b><br>
-          <i>"Driver complained battery output not working. Verified MOSFET status, performed Harness wire clean reconnect & MCB trip restart. Problem persists, escalated to F-Ops."</i>
+      <div class="card open">
+        <div class="card-header normal" onclick="toggle(this)">
+          <span class="header-title">Battery Less Range – Full Script</span>
+          <span class="badge">Script</span>
+        </div>
+        <div class="card-content" style="display:block;">
+          <button class="btn-copy" onclick="copyText(this)">Copy Script</button>
+          <span id="rangeScript">
+          Sir, samajh aa raha hai aapko range kam lag rahi hai, main check karta hoon detail mein ki range kitna de rahi hai.<br><br>
+          Sir, system ke hisaab se aapki battery ne <b><span class="fill-km">[___]</span> km</b> ki range di hai, jo ki normal range mein aati hai.<br><br>
+          Sir, aap battery aur charging ka kaafi achha dhyaan rakh rahe hain—yeh data mein bhi clearly dikh raha hai.<br><br>
+          Kabhi-kabhi road condition, traffic, load ya tez acceleration ki wajah se battery jaldi drain hoti hui lagti hai.<br><br>
+          Sir, aap battery ko 100% se 20% tak ek normal ride mein use karke dekhiye.<br><br>
+          Sir, main samajh raha hoon aapko lag raha hai range kam hai, lekin ek baar 10–15 din test karke dekhiye.<br><br>
+          Battery ka point fluctuation normal hai, especially kharab road ya chadhai par.<br><br>
+          Battery bilkul theek kaam kar rahi hai—bas usage ki wajah se aisa feel ho raha hai.
+          </span>
         </div>
       </div>
     </div>
 
-    <!-- SOC METER NOT WORKING -->
-    <div class="card">
-      <div class="card-header mixed" onclick="toggle(this)">
-        <span class="header-title">📊 SOC Meter Not Working</span>
-        <span class="badge">Display / CAN</span>
+    <!-- ERROR CODES -->
+    <div id="errors" class="tab-content">
+      <div class="rule">
+        • Same error with multiple batteries ➔ <b>Charger issue</b><br>
+        • Same battery failing on multiple chargers ➔ <b>Battery issue</b>
       </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Call Script</button>
-        <b>Call Script:</b><br>
-        • Sir, wire harness reconnect kijiye aur vehicle restart kijiye.<br>
-        • Sir, hide button press kijiye, CAN pin remove karke dobara insert kijiye.<br>
-        • Sir, agar issue continue hota hai, main F-Ops assign kar raha hoon.
 
-        <div class="note"><b>Note:</b> SOC meter voltage aur charging level dikhata hai.</div>
+      <div class="toolbar">
+        <input type="text" class="search-box" id="errorSearch" placeholder="Search error code, description..." onkeyup="filterErrors()">
+        <button class="action-btn" onclick="toggleAllCards('#errors')">Expand / Collapse All</button>
+      </div>
 
-        <div class="remark-box">
-          <button class="btn-copy" onclick="copyText(this)">Copy Remark</button>
-          <b>Hinglish System Remark:</b><br>
-          <i>"SOC meter display glitch/blank issue reported. Reconnected CAN pin and harness wire, restarted vehicle. No change in status, ticket assigned to F-Ops field technician."</i>
+      <div class="toolbar">
+        <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+        <button class="filter-btn" onclick="setFilter('supply', this)">Supply</button>
+        <button class="filter-btn" onclick="setFilter('charger', this)">Charger</button>
+        <button class="filter-btn" onclick="setFilter('battery', this)">Battery</button>
+        <button class="filter-btn" onclick="setFilter('mixed', this)">Mixed/CAN</button>
+      </div>
+
+      <div class="card error-card supply">
+        <div class="card-header supply" onclick="toggle(this)">
+          <span class="header-title">E1 - High AC Frequency</span>
+          <span class="badge">Supply</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Description:</b> Input frequency &gt;55 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur ek baar kahi aur lga k check kriye.
+        </div>
+      </div>
+
+      <div class="card error-card supply">
+        <div class="card-header supply" onclick="toggle(this)">
+          <span class="header-title">E2 - Low AC Frequency</span>
+          <span class="badge">Supply</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Description:</b> Input frequency &lt;45 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur thodi der baar ya kahi dusre area me lga k check kriye.
+        </div>
+      </div>
+
+      <div class="card error-card mixed">
+        <div class="card-header mixed" onclick="toggle(this)">
+          <span class="header-title">E3 - Communication Error</span>
+          <span class="badge">CAN / Mixed</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.
+        </div>
+      </div>
+
+      <div class="card error-card charger">
+        <div class="card-header charger" onclick="toggle(this)">
+          <span class="header-title">C6 - Charger Overheating</span>
+          <span class="badge">Charger</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Heating issue<br><b>Action:</b> Sir, ye heating issue hai, aap apne charger ko thodi der kahi hawadaar jagah pr rkh dijiye jisse woh thanda ho jaae and uske baad ye apne aap theek ho jaaega jb aap ise charge me lgaenge.<br><b>Next action:</b> Assign F-Ops if not resolved.
+        </div>
+      </div>
+
+      <div class="card error-card supply">
+        <div class="card-header supply" onclick="toggle(this)">
+          <span class="header-title">C3 - Under Voltage Issue</span>
+          <span class="badge">Supply</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Voltage Fluctuation<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action:</b> Assign F-Ops if not resolved.
+        </div>
+      </div>
+
+      <div class="card error-card supply">
+        <div class="card-header supply" onclick="toggle(this)">
+          <span class="header-title">C4 - Over Voltage Issue</span>
+          <span class="badge">Supply</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Voltage Fluctuation<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action:</b> Assign F-Ops if not resolved.
+        </div>
+      </div>
+
+      <div class="card error-card charger">
+        <div class="card-header charger" onclick="toggle(this)">
+          <span class="header-title">C7 - Charger Under Temperature</span>
+          <span class="badge">Charger</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Temp low<br><b>Action:</b> Sir, apke charger ka temprature low ho gaya hai jis wajah se ye work nahi kr rha hai, mai engineer ko assign kr deta hu.
+        </div>
+      </div>
+
+      <div class="card error-card battery">
+        <div class="card-header battery" onclick="toggle(this)">
+          <span class="header-title">E4 - Battery Disconnected</span>
+          <span class="badge">Battery</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> DC connector/BMS cutoff<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.
+        </div>
+      </div>
+
+      <div class="card error-card battery">
+        <div class="card-header battery" onclick="toggle(this)">
+          <span class="header-title">E5 - Connectivity issue</span>
+          <span class="badge">Battery</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Connectivity issue<br><b>Action:</b> Sir, aap ek br charger ke socket ko nikal ke dobaara acche se lgaiye aur reset button ko dabakr rkhiye reset krne k liye frr dusre socket me lgaiye
+        </div>
+      </div>
+
+      <div class="card error-card charger">
+        <div class="card-header charger" onclick="toggle(this)">
+          <span class="header-title">E6 - Reverse Battery</span>
+          <span class="badge">Charger</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Polarity swapped<br><b>Action:</b> Sir, charger ko sahi "+" aur "-" se connect kijiye.
+        </div>
+      </div>
+
+      <div class="card error-card battery">
+        <div class="card-header battery" onclick="toggle(this)">
+          <span class="header-title">P2 - CC1 Time Exceeded</span>
+          <span class="badge">Battery</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> &gt;2.5 hrs<br><b>Action:</b> Sir, ek baar dusri battery charge karke dekhiye.
+        </div>
+      </div>
+
+      <div class="card error-card battery">
+        <div class="card-header battery" onclick="toggle(this)">
+          <span class="header-title">B5 - Battery Over Temp</span>
+          <span class="badge">Battery</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Buzzer sounding<br><b>Action:</b> Sir, battery ko rest de dijiye, agar issue continue hota hai toh main F-Ops assign kar dunga.
+        </div>
+      </div>
+
+      <div class="card error-card normal">
+        <div class="card-header normal" onclick="toggle(this)">
+          <span class="header-title">FC - Full Charge</span>
+          <span class="badge">Normal</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
+          <b>Remarks:</b> Fully charged<br><b>Action:</b> Sir, battery fully charge ho gayi hai, remove kar dijiye.
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- BATTERY LESS RANGE -->
-  <div id="range" class="tab-content">
-    <div class="input-group">
-      <input type="number" id="rangeKm" placeholder="Enter Range in KM (e.g., 65)" oninput="updateRangeScript()">
+    <!-- WELCOME CALL SCRIPT -->
+    <div id="welcome" class="tab-content">
+      <div class="input-group">
+        <input type="text" id="agentName" placeholder="Agent Name" oninput="updateWelcomeScript()">
+        <input type="text" id="driverName" placeholder="Driver Name" oninput="updateWelcomeScript()">
+      </div>
+
+      <div class="card open">
+        <div class="card-header normal" onclick="toggle(this)">
+          <span class="header-title">📞 Welcome Call Script</span>
+          <span class="badge">Script</span>
+        </div>
+        <div class="card-content" style="display:block;">
+          <button class="btn-copy" onclick="copyText(this)">Copy Script</button>
+          <div id="welcomeScript">
+            <b>Introduction</b><br>
+            Namaskar Sir, main Battery Smart se <b><span class="fill-agent">[Caller Name]</span></b> bol raha hoon. Kya meri baat <b><span class="fill-driver">[Driver Name]</span></b> se ho rahi hai?<br>
+            Sir, system me check kar raha hoon ki aap recently Battery Smart ke saath onboard hue hain. Sabse pehle, aapka humare saath judne ke liye bahut-bahut dhanyavaad.<br>
+            Kya abhi 2–3 minute baat karne ke liye theek samay hai?<br><br>
+
+            <b>Objective of Call</b><br>
+            Sir, ye ek welcome call hai jisme main aapko battery aur charger ko sahi tarike se use karne ki basic information share karunga.<br>
+            Isse aapko better battery range milegi aur future me issues kam aayenge. Agar beech me koi bhi doubt aaye, aap bina hesitation ke pooch sakte hain.<br><br>
+
+            <b>Battery Usage Tips</b><br>
+            • Sir, kyunki aapne nayi battery li hai, sabse pehle ise full charge (FC) tak charge karein.<br>
+            • Battery ko kabhi bhi completely discharge na hone dein — jaise hi 20% SOC aaye, charging laga dein.<br>
+            • Hamesha Battery Smart ka original charger hi use karein.<br>
+            • Third-party charger ya repair se bachhein, isse battery damage ho sakti hai.<br><br>
+
+            <b>Charger Usage Tips</b><br>
+            • Charging hamesha dry aur ventilated jagah par karein.<br>
+            • Charger lagate hi indicator light ON honi chahiye.<br>
+            • Charger ki lead aur plug properly connected hone chahiye.<br>
+            • Switch board ON hona zaroori hai.<br>
+            Ek important baat — agar charger lost ya stolen ho jata hai, to company policy ke according ₹10,000 charge lagta hai.<br><br>
+
+            <b>How to Get Better Battery Range</b><br>
+            • Battery ko hamesha 100% charge karke use karein.<br>
+            • Vehicle ko overload na karein — ideal load driver + 3–4 passengers tak rakhein.<br>
+            • Tyre pressure 40–45 PSI maintain rakhein.<br>
+            • Vehicle ka regular maintenance karte rahein.<br>
+            • Sudden acceleration aur rough driving se bachein.<br><br>
+
+            <b>MCB Handling</b><br>
+            • Junction box ko hamesha properly cover karke rakhein.<br>
+            • Charging ke time MCB OFF rakhein.<br><br>
+
+            <b>CAN Wire Check</b><br>
+            • Battery connector wire properly connected honi chahiye.<br>
+            • Meter par CAN communication light blink karni chahiye.<br><br>
+
+            <b>Common Issues & Quick Checks</b><br>
+            1️⃣ Wire harness connection loose to nahi hai<br>
+            2️⃣ MCB trip ya OFF to nahi hai<br>
+            3️⃣ Battery me charge hai ya nahi<br><br>
+
+            <b>Support Process</b><br>
+            • Driver App se request raise karein<br>
+            • Ya support number 8055300400 par call karein<br><br>
+
+            <b>Closing Pitch</b><br>
+            Sir, ummeed hai jo information maine share ki hai wo aapke liye helpful rahegi.<br>
+            Safe driving karein — aapka din shubh rahe!
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="card open">
-      <div class="card-header normal" onclick="toggle(this)">
-        <span class="header-title">Battery Less Range – Full Script</span>
-        <span class="badge">Script</span>
-      </div>
-      <div class="card-content" style="display:block;">
-        <button class="btn-copy" onclick="copyText(this)">Copy Script</button>
-        <span id="rangeScript">
-        Sir, samajh aa raha hai aapko range kam lag rahi hai, main check karta hoon detail mein ki range kitna de rahi hai.<br><br>
-        Sir, system ke hisaab se aapki battery ne <b><span class="fill-km">[___]</span> km</b> ki range di hai, jo ki normal range mein aati hai.<br><br>
-        Sir, aap battery aur charging ka kaafi achha dhyaan rakh rahe hain—yeh data mein bhi clearly dikh raha hai.<br><br>
-        Kabhi-kabhi road condition, traffic, load ya tez acceleration ki wajah se battery jaldi drain hoti hui lagti hai.<br><br>
-        Sir, aap battery ko 100% se 20% tak ek normal ride mein use karke dekhiye.<br><br>
-        Sir, main samajh raha hoon aapko lag raha hai range kam hai, lekin ek baar 10–15 din test karke dekhiye.<br><br>
-        Battery ka point fluctuation normal hai, especially kharab road ya chadhai par.<br><br>
-        Battery bilkul theek kaam kar rahi hai—bas usage ki wajah se aisa feel ho raha hai.
-        </span>
+    <!-- SERVICE & CONSUMABLE CHARGES -->
+    <div id="charges" class="tab-content">
+      <h2>🛠️ Service & Consumable Charges</h2>
+      <p>Detailed breakdown of replacement costs and out-of-tenure service charges.</p>
+
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Consumable Name</th>
+            <th>Charges (INR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Harness Replaced</td><td>₹400</td></tr>
+          <tr><td>MCB properly fitted</td><td>₹50</td></tr>
+          <tr><td>MCB Repaired</td><td>₹50</td></tr>
+          <tr><td>MCB Replaced</td><td>₹100</td></tr>
+          <tr><td>Meter Repaired</td><td>₹50</td></tr>
+          <tr><td>Meter Replaced</td><td>₹200</td></tr>
+          <tr><td>No issue found - Battery or Charger</td><td>₹0</td></tr>
+          <tr><td>No issue found - Other issues</td><td>₹40</td></tr>
+          <tr><td>Stolen CAN Wire - New Provided</td><td>₹100</td></tr>
+          <tr><td>Stolen Harness - New Provided</td><td>₹800</td></tr>
+          <tr><td>Stolen MCB - New Provided</td><td>₹100</td></tr>
+          <tr><td>Stolen Meter - New Provided</td><td>₹500</td></tr>
+          <tr><td>Wiring Repaired</td><td>₹50</td></tr>
+          <tr><td>Wiring Replaced</td><td>₹100</td></tr>
+          <tr><td>Stolen BaaS Charger - New Provided</td><td>₹10,000</td></tr>
+          <tr><td>Adaptor Replace</td><td>₹200</td></tr>
+          <tr class="highlight-row"><td>Charger replacement (Out tenure)</td><td>₹100</td></tr>
+          <tr class="highlight-row"><td>Battery Replacement (Out tenure)</td><td>₹200</td></tr>
+          <tr class="highlight-row"><td>Service battery needed (Out of tenure)</td><td>₹100</td></tr>
+        </tbody>
+      </table>
+
+      <div class="rule">
+        <b>Important Rules:</b><br>
+        1. If the battery or charger is replaced, service charges will not be applicable.<br>
+        2. No charges applicable within one month of onboarding.<br>
+        3. In case no issue is found, no service charges will be applicable to the driver.
       </div>
     </div>
+
+    <!-- SMP PLAN -->
+    <div id="smp" class="tab-content">
+      <h2>🛡️ Smart Maintenance Plan (SMP) - Do not use- Currently on HOLD</h2>
+      <p>Overview of plans, benefits, and sales call scripts for out-of-tenure drivers.</p>
+
+      <!-- SMP Overview Table -->
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Duration</th>
+            <th>Visits</th>
+            <th>Asset Replacement*</th>
+            <th>Consumables Replacement**</th>
+            <th>SMP Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>🥉 Bronze</b></td>
+            <td>3 Months</td>
+            <td>4</td>
+            <td>1</td>
+            <td>1</td>
+            <td><b>₹400</b></td>
+          </tr>
+          <tr>
+            <td><b>🥈 Silver</b></td>
+            <td>6 Months</td>
+            <td>8</td>
+            <td>2</td>
+            <td>2</td>
+            <td><b>₹700</b></td>
+          </tr>
+          <tr>
+            <td><b>🥇 Gold</b></td>
+            <td>1 Year</td>
+            <td>16</td>
+            <td>4</td>
+            <td>4</td>
+            <td><b>₹1,200</b></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert-box">
+        ⚠️ <b>Important Rule for Calling:</b> Calling mein “₹3,500–4,000 pakka bachenge” mat bolna. Better hai “maximum benefit” ya “up to ₹3,440” bolna, kyunki actual saving tabhi hogi jab driver included services/replacements use karega.
+      </div>
+
+      <div class="toolbar">
+        <button class="action-btn" onclick="toggleAllCards('#smp')">Expand / Collapse All Pitch Cards</button>
+      </div>
+
+      <!-- Opening Pitch -->
+      <div class="card open">
+        <div class="card-header normal" onclick="toggle(this)">
+          <span class="header-title">💬 Opening Pitch (Tenure Complete)</span>
+          <span class="badge">Intro</span>
+        </div>
+        <div class="card-content" style="display:block;">
+          <button class="btn-copy" onclick="copyText(this)">Copy Intro</button>
+          “Sir, namaste. Jaisa main check kar paa raha hoon, aapka tenure complete ho chuka hai. Ab tenure complete hone ke baad agar battery ya charger mein koi problem aati hai, toh uska charge aapko dena padega — battery ke ₹200 aur charger ke ₹100.<br><br>
+          Lekin sir, in extra kharchon se bachne ke liye humare paas ek SMP plan hai. Isme aapko service visits ke saath battery/charger aur meter, harness ya MCB replacement ka benefit bhi milta hai. Matlab jab zarurat pade, toh alag-alag paise dene ki zarurat nahi padegi.”
+        </div>
+      </div>
+
+      <!-- Bronze Plan Pitch -->
+      <div class="card">
+        <div class="card-header bronze" onclick="toggle(this)">
+          <span class="header-title">🥉 Bronze Plan Pitch – ₹400</span>
+          <span class="badge">3 Months</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
+          “Sir, pehla plan ₹400 ka hai. Isme aapko 3 mahine tak 4 service visits free milengi, yani ₹160 ki saving. Saath mein 1 baar battery ya charger replacement free milega, jisse ₹200 tak ki saving hogi. Aur 1 consumable — SOC meter, harness wire ya MCB — bhi free milega, jisse ₹500 tak ki saving ho sakti hai.<br><br>
+          Matlab sir, ₹400 ke plan mein aapko maximum ₹860 tak ka benefit mil sakta hai.”
+        </div>
+      </div>
+
+      <!-- Silver Plan Pitch -->
+      <div class="card">
+        <div class="card-header silver" onclick="toggle(this)">
+          <span class="header-title">🥈 Silver Plan Pitch – ₹700</span>
+          <span class="badge">6 Months</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
+          “Sir, doosra plan ₹700 ka hai, jo 6 mahine ke liye hai. Isme 8 service visits free milengi, yani ₹320 ki saving. 2 baar battery ya charger replacement milega, yani ₹400 ki saving. Aur 2 consumables — meter, harness ya MCB — free milenge, jisse ₹1,000 tak ki saving ho sakti hai.<br><br>
+          Yani ₹700 mein maximum ₹1,720 tak ka benefit mil sakta hai.”
+        </div>
+      </div>
+
+      <!-- Gold Plan Pitch -->
+      <div class="card">
+        <div class="card-header gold" onclick="toggle(this)">
+          <span class="header-title">🥇 Gold Plan Pitch – ₹1,200</span>
+          <span class="badge">1 Year</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
+          “Aur sir, agar aap ek saal ke liye tension-free rehna chahte hain, toh Gold plan ₹1,200 ka hai. Isme 16 service visits free milengi, yani ₹640 ki saving. 4 baar battery ya charger replacement milega, yani ₹800 ki saving. Aur 4 consumables free milenge, jisse ₹2,000 tak ki saving ho sakti hai.<br><br>
+          Matlab sir, ₹1,200 ke plan mein maximum ₹3,440 ka direct benefit banta hai. Agar consumables ki actual replacement cost ₹500 se zyada hoti hai, toh benefit ₹4,000 ke aas-paas bhi ja sakta hai.”
+        </div>
+      </div>
+
+      <!-- Closing Pitch -->
+      <div class="card">
+        <div class="card-header normal" onclick="toggle(this)">
+          <span class="header-title">🎯 Closing Pitch</span>
+          <span class="badge">Closing</span>
+        </div>
+        <div class="card-content">
+          <button class="btn-copy" onclick="copyText(this)">Copy Closing</button>
+          “Sir, aapko baar-baar ₹40, ₹200 ya ₹100 alag se dene ki tension nahi rahegi. Aap ek baar plan leke apni maintenance cost ko manage kar sakte hain. Aapke usage ke hisaab se main Bronze, Silver ya Gold mein se kaunsa plan kar doon?”
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
-  <!-- ERROR CODES -->
-  <div id="errors" class="tab-content">
+
+  <!-- ================= MAAS REMOTE DIAGNOSTIC SECTION ================= -->
+  <div id="maas-section" class="section-container">
+    
+    <!-- MaaS Top Header Bar -->
+    <div class="maas-header">
+      <div class="maas-logo">
+        <div class="maas-logo-icon">RD</div>
+        <span>MAAS Remote Diagnostic Team Handbook</span>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="action-btn" onclick="copyVisibleMaasRemarks()">📋 Copy Visible Remarks</button>
+        <button class="action-btn" onclick="resetMaaSFilters()">🔄 Reset</button>
+      </div>
+    </div>
+
+    <!-- Notice Tip -->
     <div class="rule">
-      • Same error with multiple batteries ➔ <b>Charger issue</b><br>
-      • Same battery failing on multiple chargers ➔ <b>Battery issue</b>
+      💡 <b>Tip:</b> Direct search using short queries like "meter", "mcb", "brake", "vcu", or "throttle". Click buttons on cards to instantly copy system remarks or resolution steps.
     </div>
 
+    <!-- Stats Panel -->
+    <div class="maas-stats">
+      <div class="stat-card">
+        <div class="stat-num" id="maas-total-issues">0</div>
+        <div class="stat-label">Issues Shown</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="maas-total-checks">0</div>
+        <div class="stat-label">Checks Shown</div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
     <div class="toolbar">
-      <input type="text" class="search-box" id="errorSearch" placeholder="Search error code, description..." onkeyup="filterErrors()">
-      <button class="action-btn" onclick="toggleAllCards('#errors')">Expand / Collapse All</button>
+      <input type="text" class="search-box" id="maasSearch" placeholder="Search vehicle issue, category, or symptom..." onkeyup="renderMaaS()">
     </div>
 
-    <div class="toolbar">
-      <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
-      <button class="filter-btn" onclick="setFilter('supply', this)">Supply</button>
-      <button class="filter-btn" onclick="setFilter('charger', this)">Charger</button>
-      <button class="filter-btn" onclick="setFilter('battery', this)">Battery</button>
-      <button class="filter-btn" onclick="setFilter('mixed', this)">Mixed/CAN</button>
+    <div class="toolbar" id="maas-cat-filters">
+      <!-- Generated via JS -->
     </div>
 
-    <div class="card error-card supply">
-      <div class="card-header supply" onclick="toggle(this)">
-        <span class="header-title">E1 - High AC Frequency</span>
-        <span class="badge">Supply</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Description:</b> Input frequency &gt;55 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur ek baar kahi aur lga k check kriye.
-      </div>
-    </div>
-
-    <div class="card error-card supply">
-      <div class="card-header supply" onclick="toggle(this)">
-        <span class="header-title">E2 - Low AC Frequency</span>
-        <span class="badge">Supply</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Description:</b> Input frequency &lt;45 Hz<br><b>Remarks:</b> Main supply issue<br><b>Action:</b> Sir, ye power supply ka issue hai, aap apne ghar ka main power supply check kijiye aur thodi der baar ya kahi dusre area me lga k check kriye.
-      </div>
-    </div>
-
-    <div class="card error-card mixed">
-      <div class="card-header mixed" onclick="toggle(this)">
-        <span class="header-title">E3 - Communication Error</span>
-        <span class="badge">CAN / Mixed</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> CAN pin issue<br><b>Action:</b> Sir, aap battery aur charger ko ek br nikal kr dobaara acche se lagaiye.
-      </div>
-    </div>
-
-    <div class="card error-card charger">
-      <div class="card-header charger" onclick="toggle(this)">
-        <span class="header-title">C6 - Charger Overheating</span>
-        <span class="badge">Charger</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Heating issue<br><b>Action:</b> Sir, ye heating issue hai, aap apne charger ko thodi der kahi hawadaar jagah pr rkh dijiye jisse woh thanda ho jaae and uske baad ye apne aap theek ho jaaega jb aap ise charge me lgaenge.<br><b>Next action:</b> Assign F-Ops if not resolved.
-      </div>
-    </div>
-
-    <div class="card error-card supply">
-      <div class="card-header supply" onclick="toggle(this)">
-        <span class="header-title">C3 - Under Voltage Issue</span>
-        <span class="badge">Supply</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Voltage Fluctuation<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action:</b> Assign F-Ops if not resolved.
-      </div>
-    </div>
-
-    <div class="card error-card supply">
-      <div class="card-header supply" onclick="toggle(this)">
-        <span class="header-title">C4 - Over Voltage Issue</span>
-        <span class="badge">Supply</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Voltage Fluctuation<br><b>Action:</b> Sir, Apke ghar me voltage fluctuation bahot jyada ho rahi hai jiske wajah se ye issue aa rha hai. Kripya aap ek br kisi dusri jagah charge me lgakr dekhe.<br><b>Next action:</b> Assign F-Ops if not resolved.
-      </div>
-    </div>
-
-    <div class="card error-card charger">
-      <div class="card-header charger" onclick="toggle(this)">
-        <span class="header-title">C7 - Charger Under Temperature</span>
-        <span class="badge">Charger</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Temp low<br><b>Action:</b> Sir, apke charger ka temprature low ho gaya hai jis wajah se ye work nahi kr rha hai, mai engineer ko assign kr deta hu.
-      </div>
-    </div>
-
-    <div class="card error-card battery">
-      <div class="card-header battery" onclick="toggle(this)">
-        <span class="header-title">E4 - Battery Disconnected</span>
-        <span class="badge">Battery</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> DC connector/BMS cutoff<br><b>Action:</b> Sir, main F-Ops team ko assign kar raha hoon.
-      </div>
-    </div>
-
-    <div class="card error-card battery">
-      <div class="card-header battery" onclick="toggle(this)">
-        <span class="header-title">E5 - Connectivity issue</span>
-        <span class="badge">Battery</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Connectivity issue<br><b>Action:</b> Sir, aap ek br charger ke socket ko nikal ke dobaara acche se lgaiye aur reset button ko dabakr rkhiye reset krne k liye frr dusre socket me lgaiye
-      </div>
-    </div>
-
-    <div class="card error-card charger">
-      <div class="card-header charger" onclick="toggle(this)">
-        <span class="header-title">E6 - Reverse Battery</span>
-        <span class="badge">Charger</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Polarity swapped<br><b>Action:</b> Sir, charger ko sahi "+" aur "-" se connect kijiye.
-      </div>
-    </div>
-
-    <div class="card error-card battery">
-      <div class="card-header battery" onclick="toggle(this)">
-        <span class="header-title">P2 - CC1 Time Exceeded</span>
-        <span class="badge">Battery</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> &gt;2.5 hrs<br><b>Action:</b> Sir, ek baar dusri battery charge karke dekhiye.
-      </div>
-    </div>
-
-    <div class="card error-card battery">
-      <div class="card-header battery" onclick="toggle(this)">
-        <span class="header-title">B5 - Battery Over Temp</span>
-        <span class="badge">Battery</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Buzzer sounding<br><b>Action:</b> Sir, battery ko rest de dijiye, agar issue continue hota hai toh main F-Ops assign kar dunga.
-      </div>
-    </div>
-
-    <div class="card error-card normal">
-      <div class="card-header normal" onclick="toggle(this)">
-        <span class="header-title">FC - Full Charge</span>
-        <span class="badge">Normal</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Details</button>
-        <b>Remarks:</b> Fully charged<br><b>Action:</b> Sir, battery fully charge ho gayi hai, remove kar dijiye.
-      </div>
-    </div>
-  </div>
-
-  <!-- WELCOME CALL SCRIPT -->
-  <div id="welcome" class="tab-content">
-    <div class="input-group">
-      <input type="text" id="agentName" placeholder="Agent Name" oninput="updateWelcomeScript()">
-      <input type="text" id="driverName" placeholder="Driver Name" oninput="updateWelcomeScript()">
-    </div>
-
-    <div class="card open">
-      <div class="card-header normal" onclick="toggle(this)">
-        <span class="header-title">📞 Welcome Call Script</span>
-        <span class="badge">Script</span>
-      </div>
-      <div class="card-content" style="display:block;">
-        <button class="btn-copy" onclick="copyText(this)">Copy Script</button>
-        <div id="welcomeScript">
-          <b>Introduction</b><br>
-          Namaskar Sir, main Battery Smart se <b><span class="fill-agent">[Caller Name]</span></b> bol raha hoon. Kya meri baat <b><span class="fill-driver">[Driver Name]</span></b> se ho rahi hai?<br>
-          Sir, system me check kar raha hoon ki aap recently Battery Smart ke saath onboard hue hain. Sabse pehle, aapka humare saath judne ke liye bahut-bahut dhanyavaad.<br>
-          Kya abhi 2–3 minute baat karne ke liye theek samay hai?<br><br>
-
-          <b>Objective of Call</b><br>
-          Sir, ye ek welcome call hai jisme main aapko battery aur charger ko sahi tarike se use karne ki basic information share karunga.<br>
-          Isse aapko better battery range milegi aur future me issues kam aayenge. Agar beech me koi bhi doubt aaye, aap bina hesitation ke pooch sakte hain.<br><br>
-
-          <b>Battery Usage Tips</b><br>
-          • Sir, kyunki aapne nayi battery li hai, sabse pehle ise full charge (FC) tak charge karein.<br>
-          • Battery ko kabhi bhi completely discharge na hone dein — jaise hi 20% SOC aaye, charging laga dein.<br>
-          • Hamesha Battery Smart ka original charger hi use karein.<br>
-          • Third-party charger ya repair se bachhein, isse battery damage ho sakti hai.<br><br>
-
-          <b>Charger Usage Tips</b><br>
-          • Charging hamesha dry aur ventilated jagah par karein.<br>
-          • Charger lagate hi indicator light ON honi chahiye.<br>
-          • Charger ki lead aur plug properly connected hone chahiye.<br>
-          • Switch board ON hona zaroori hai.<br>
-          Ek important baat — agar charger lost ya stolen ho jata hai, to company policy ke according ₹10,000 charge lagta hai.<br><br>
-
-          <b>How to Get Better Battery Range</b><br>
-          • Battery ko hamesha 100% charge karke use karein.<br>
-          • Vehicle ko overload na karein — ideal load driver + 3–4 passengers tak rakhein.<br>
-          • Tyre pressure 40–45 PSI maintain rakhein.<br>
-          • Vehicle ka regular maintenance karte rahein.<br>
-          • Sudden acceleration aur rough driving se bachein.<br><br>
-
-          <b>MCB Handling</b><br>
-          • Junction box ko hamesha properly cover karke rakhein.<br>
-          • Charging ke time MCB OFF rakhein.<br><br>
-
-          <b>CAN Wire Check</b><br>
-          • Battery connector wire properly connected honi chahiye.<br>
-          • Meter par CAN communication light blink karni chahiye.<br><br>
-
-          <b>Common Issues & Quick Checks</b><br>
-          1️⃣ Wire harness connection loose to nahi hai<br>
-          2️⃣ MCB trip ya OFF to nahi hai<br>
-          3️⃣ Battery me charge hai ya nahi<br><br>
-
-          <b>Support Process</b><br>
-          • Driver App se request raise karein<br>
-          • Ya support number 8055300400 par call karein<br><br>
-
-          <b>Closing Pitch</b><br>
-          Sir, ummeed hai jo information maine share ki hai wo aapke liye helpful rahegi.<br>
-          Safe driving karein — aapka din shubh rahe!
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- SERVICE & CONSUMABLE CHARGES -->
-  <div id="charges" class="tab-content">
-    <h2>🛠️ Service & Consumable Charges</h2>
-    <p>Detailed breakdown of replacement costs and out-of-tenure service charges.</p>
-
-    <table class="styled-table">
-      <thead>
-        <tr>
-          <th>Consumable Name</th>
-          <th>Charges (INR)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>Harness Replaced</td><td>₹400</td></tr>
-        <tr><td>MCB properly fitted</td><td>₹50</td></tr>
-        <tr><td>MCB Repaired</td><td>₹50</td></tr>
-        <tr><td>MCB Replaced</td><td>₹100</td></tr>
-        <tr><td>Meter Repaired</td><td>₹50</td></tr>
-        <tr><td>Meter Replaced</td><td>₹200</td></tr>
-        <tr><td>No issue found - Battery or Charger</td><td>₹0</td></tr>
-        <tr><td>No issue found - Other issues</td><td>₹40</td></tr>
-        <tr><td>Stolen CAN Wire - New Provided</td><td>₹100</td></tr>
-        <tr><td>Stolen Harness - New Provided</td><td>₹800</td></tr>
-        <tr><td>Stolen MCB - New Provided</td><td>₹100</td></tr>
-        <tr><td>Stolen Meter - New Provided</td><td>₹500</td></tr>
-        <tr><td>Wiring Repaired</td><td>₹50</td></tr>
-        <tr><td>Wiring Replaced</td><td>₹100</td></tr>
-        <tr><td>Stolen BaaS Charger - New Provided</td><td>₹10,000</td></tr>
-        <tr><td>Adaptor Replace</td><td>₹200</td></tr>
-        <tr class="highlight-row"><td>Charger replacement (Out tenure)</td><td>₹100</td></tr>
-        <tr class="highlight-row"><td>Battery Replacement (Out tenure)</td><td>₹200</td></tr>
-        <tr class="highlight-row"><td>Service battery needed (Out of tenure)</td><td>₹100</td></tr>
-      </tbody>
-    </table>
-
-    <div class="rule">
-      <b>Important Rules:</b><br>
-      1. If the battery or charger is replaced, service charges will not be applicable.<br>
-      2. No charges applicable within one month of onboarding.<br>
-      3. In case no issue is found, no service charges will be applicable to the driver.
-    </div>
-  </div>
-
-  <!-- SMP PLAN -->
-  <div id="smp" class="tab-content">
-    <h2>🛡️ Smart Maintenance Plan (SMP) - Do not use- Currently on HOLD</h2>
-    <p>Overview of plans, benefits, and sales call scripts for out-of-tenure drivers.</p>
-
-    <!-- SMP Overview Table -->
-    <table class="styled-table">
-      <thead>
-        <tr>
-          <th>Plan</th>
-          <th>Duration</th>
-          <th>Visits</th>
-          <th>Asset Replacement*</th>
-          <th>Consumables Replacement**</th>
-          <th>SMP Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><b>🥉 Bronze</b></td>
-          <td>3 Months</td>
-          <td>4</td>
-          <td>1</td>
-          <td>1</td>
-          <td><b>₹400</b></td>
-        </tr>
-        <tr>
-          <td><b>🥈 Silver</b></td>
-          <td>6 Months</td>
-          <td>8</td>
-          <td>2</td>
-          <td>2</td>
-          <td><b>₹700</b></td>
-        </tr>
-        <tr>
-          <td><b>🥇 Gold</b></td>
-          <td>1 Year</td>
-          <td>16</td>
-          <td>4</td>
-          <td>4</td>
-          <td><b>₹1,200</b></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="alert-box">
-      ⚠️ <b>Important Rule for Calling:</b> Calling mein “₹3,500–4,000 pakka bachenge” mat bolna. Better hai “maximum benefit” ya “up to ₹3,440” bolna, kyunki actual saving tabhi hogi jab driver included services/replacements use karega.
-    </div>
-
-    <div class="toolbar">
-      <button class="action-btn" onclick="toggleAllCards('#smp')">Expand / Collapse All Pitch Cards</button>
-    </div>
-
-    <!-- Opening Pitch -->
-    <div class="card open">
-      <div class="card-header normal" onclick="toggle(this)">
-        <span class="header-title">💬 Opening Pitch (Tenure Complete)</span>
-        <span class="badge">Intro</span>
-      </div>
-      <div class="card-content" style="display:block;">
-        <button class="btn-copy" onclick="copyText(this)">Copy Intro</button>
-        “Sir, namaste. Jaisa main check kar paa raha hoon, aapka tenure complete ho chuka hai. Ab tenure complete hone ke baad agar battery ya charger mein koi problem aati hai, toh uska charge aapko dena padega — battery ke ₹200 aur charger ke ₹100.<br><br>
-        Lekin sir, in extra kharchon se bachne ke liye humare paas ek SMP plan hai. Isme aapko service visits ke saath battery/charger aur meter, harness ya MCB replacement ka benefit bhi milta hai. Matlab jab zarurat pade, toh alag-alag paise dene ki zarurat nahi padegi.”
-      </div>
-    </div>
-
-    <!-- Bronze Plan Pitch -->
-    <div class="card">
-      <div class="card-header bronze" onclick="toggle(this)">
-        <span class="header-title">🥉 Bronze Plan Pitch – ₹400</span>
-        <span class="badge">3 Months</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
-        “Sir, pehla plan ₹400 ka hai. Isme aapko 3 mahine tak 4 service visits free milengi, yani ₹160 ki saving. Saath mein 1 baar battery ya charger replacement free milega, jisse ₹200 tak ki saving hogi. Aur 1 consumable — SOC meter, harness wire ya MCB — bhi free milega, jisse ₹500 tak ki saving ho sakti hai.<br><br>
-        Matlab sir, ₹400 ke plan mein aapko maximum ₹860 tak ka benefit mil sakta hai.”
-      </div>
-    </div>
-
-    <!-- Silver Plan Pitch -->
-    <div class="card">
-      <div class="card-header silver" onclick="toggle(this)">
-        <span class="header-title">🥈 Silver Plan Pitch – ₹700</span>
-        <span class="badge">6 Months</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
-        “Sir, doosra plan ₹700 ka hai, jo 6 mahine ke liye hai. Isme 8 service visits free milengi, yani ₹320 ki saving. 2 baar battery ya charger replacement milega, yani ₹400 ki saving. Aur 2 consumables — meter, harness ya MCB — free milenge, jisse ₹1,000 tak ki saving ho sakti hai.<br><br>
-        Yani ₹700 mein maximum ₹1,720 tak ka benefit mil sakta hai.”
-      </div>
-    </div>
-
-    <!-- Gold Plan Pitch -->
-    <div class="card">
-      <div class="card-header gold" onclick="toggle(this)">
-        <span class="header-title">🥇 Gold Plan Pitch – ₹1,200</span>
-        <span class="badge">1 Year</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Pitch</button>
-        “Aur sir, agar aap ek saal ke liye tension-free rehna chahte hain, toh Gold plan ₹1,200 ka hai. Isme 16 service visits free milengi, yani ₹640 ki saving. 4 baar battery ya charger replacement milega, yani ₹800 ki saving. Aur 4 consumables free milenge, jisse ₹2,000 tak ki saving ho sakti hai.<br><br>
-        Matlab sir, ₹1,200 ke plan mein maximum ₹3,440 ka direct benefit banta hai. Agar consumables ki actual replacement cost ₹500 se zyada hoti hai, toh benefit ₹4,000 ke aas-paas bhi ja sakta hai.”
-      </div>
-    </div>
-
-    <!-- Closing Pitch -->
-    <div class="card">
-      <div class="card-header normal" onclick="toggle(this)">
-        <span class="header-title">🎯 Closing Pitch</span>
-        <span class="badge">Closing</span>
-      </div>
-      <div class="card-content">
-        <button class="btn-copy" onclick="copyText(this)">Copy Closing</button>
-        “Sir, aapko baar-baar ₹40, ₹200 ya ₹100 alag se dene ki tension nahi rahegi. Aap ek baar plan leke apni maintenance cost ko manage kar sakte hain. Aapke usage ke hisaab se main Bronze, Silver ya Gold mein se kaunsa plan kar doon?”
-      </div>
+    <!-- Issues Grid Container -->
+    <div class="maas-grid" id="maas-grid-container">
+      <!-- Generated via JS -->
     </div>
 
   </div>
 
 </div>
 
-<script>
-let currentFilter = 'all';
+<!-- Toast Popup Container -->
+<div id="toast">Copied to clipboard!</div>
 
-function toggle(el) {
-  let card = el.parentElement;
-  let content = el.nextElementSibling;
-  
-  if (content.style.display === "block") {
-    content.style.display = "none";
-    card.classList.remove("open");
+<script>
+
+// --- MAIN TAB SWITCHING ---
+function switchMainTab(tabName, btn) {
+  document.querySelectorAll('.main-nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('.section-container').forEach(sec => sec.classList.remove('active'));
+  if (tabName === 'baas') {
+    document.getElementById('baas-section').classList.add('active');
   } else {
-    content.style.display = "block";
-    card.classList.add("open");
+    document.getElementById('maas-section').classList.add('active');
+    renderMaaS(); // Refresh/Render MaaS Grid when tab becomes active
   }
 }
 
+// --- BAAS TAB SWITCHING ---
 function openTab(evt, tabId) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-  evt.target.classList.add("active");
-  document.getElementById(tabId).classList.add("active");
+  let contents = document.querySelectorAll('#baas-section .tab-content');
+  contents.forEach(c => c.classList.remove('active'));
+
+  let tabs = document.querySelectorAll('#baas-section .tab');
+  tabs.forEach(t => t.classList.remove('active'));
+
+  document.getElementById(tabId).classList.add('active');
+  evt.currentTarget.classList.add('active');
 }
 
-function filterErrors() {
-  let input = document.getElementById("errorSearch").value.toLowerCase();
-  let cards = document.querySelectorAll(".error-card");
+// --- CARD TOGGLE ---
+function toggle(headerEl) {
+  let card = headerEl.parentElement;
+  card.classList.toggle('open');
+}
 
-  cards.forEach(card => {
-    let text = card.innerText.toLowerCase();
-    let matchesSearch = text.includes(input);
-    let matchesFilter = (currentFilter === 'all') || card.classList.contains(currentFilter);
-
-    if (matchesSearch && matchesFilter) {
-      card.style.display = "block";
+function toggleAllCards(parentSelector) {
+  let cards = document.querySelectorAll(parentSelector + ' .card');
+  let anyClosed = Array.from(cards).some(c => !c.classList.contains('open'));
+  cards.forEach(c => {
+    if (anyClosed) {
+      c.classList.add('open');
     } else {
-      card.style.display = "none";
+      c.classList.remove('open');
     }
   });
 }
 
-function setFilter(category, btn) {
-  currentFilter = category;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  filterErrors();
-}
-
-function toggleAllCards(tabSelector) {
-  let cards = document.querySelectorAll(`${tabSelector} .card`);
-  let shouldOpen = Array.from(cards).some(card => {
-    let content = card.querySelector('.card-content');
-    return content.style.display !== 'block';
-  });
-
-  cards.forEach(card => {
-    let content = card.querySelector('.card-content');
-    if (shouldOpen) {
-      content.style.display = 'block';
-      card.classList.add('open');
-    } else {
-      content.style.display = 'none';
-      card.classList.remove('open');
-    }
-  });
-}
-
+// --- DYNAMIC TEXT UPDATERS ---
 function updateRangeScript() {
-  let val = document.getElementById('rangeKm').value || '___';
-  document.querySelectorAll('.fill-km').forEach(el => el.innerText = val);
+  let kmVal = document.getElementById('rangeKm').value;
+  let spans = document.querySelectorAll('.fill-km');
+  spans.forEach(s => {
+    s.innerText = kmVal ? kmVal : '[___]';
+  });
 }
 
 function updateWelcomeScript() {
   let agent = document.getElementById('agentName').value || '[Caller Name]';
   let driver = document.getElementById('driverName').value || '[Driver Name]';
-  
-  document.querySelectorAll('.fill-agent').forEach(el => el.innerText = agent);
-  document.querySelectorAll('.fill-driver').forEach(el => el.innerText = driver);
+
+  document.querySelectorAll('.fill-agent').forEach(s => s.innerText = agent);
+  document.querySelectorAll('.fill-driver').forEach(s => s.innerText = driver);
 }
 
-function copyText(btn) {
-  let container = btn.parentElement.cloneNode(true);
-  let btnsInCopy = container.querySelectorAll('.btn-copy');
-  btnsInCopy.forEach(b => b.remove());
-  
-  let text = container.innerText.trim();
-  navigator.clipboard.writeText(text).then(() => {
-    let originalText = btn.innerText;
-    btn.innerText = "Copied!";
-    setTimeout(() => btn.innerText = originalText, 1500);
+// --- ERROR CODE FILTERING ---
+let currentErrorFilter = 'all';
+
+function setFilter(filter, btn) {
+  currentErrorFilter = filter;
+  let buttons = document.querySelectorAll('#errors .filter-btn');
+  buttons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterErrors();
+}
+
+function filterErrors() {
+  let query = document.getElementById('errorSearch').value.toLowerCase();
+  let cards = document.querySelectorAll('#errors .error-card');
+
+  cards.forEach(card => {
+    let text = card.innerText.toLowerCase();
+    let matchesSearch = text.includes(query);
+    let matchesFilter = (currentErrorFilter === 'all') || card.classList.contains(currentErrorFilter);
+
+    if (matchesSearch && matchesFilter) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
   });
 }
+
+// --- COPY TO CLIPBOARD ---
+function copyText(button) {
+  let container = button.parentElement;
+  // Clone element to manipulate text without copy button text
+  let clone = container.cloneNode(true);
+  let btns = clone.querySelectorAll('button');
+  btns.forEach(b => b.remove());
+
+  let textToCopy = clone.innerText.trim();
+  
+  copyToClipboard(textToCopy);
+}
+
+function copyToClipboard(text) {
+  let textArea = document.createElement("textarea");
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    document.execCommand('copy');
+    showToast("Copied to clipboard!");
+  } catch (err) {
+    showToast("Failed to copy!");
+  }
+  document.body.removeChild(textArea);
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  toast.innerText = msg;
+  toast.className = "show";
+  setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
+}
+
+
+// ================= MAAS HANDBOOK DATA & ENGINE =================
+
+const maasData = [
+  {
+    title: "Vehicle Not Starting (Key ON, No Display / Dead)",
+    category: "Starting",
+    steps: [
+      "Check MCB status in utility box (ensure turned ON).",
+      "Check Ignition key switch and wire harness connection.",
+      "Inspect 12V auxiliary fuse / main DC-DC converter output.",
+      "Check battery connection & SOC level."
+    ],
+    callRemark: "Guide driver to reset MCB & check battery connections. Vehicle turned ON successfully over call.",
+    visitRemark: "Key ON display dead. MCB & connections verified by driver. Issue unresolved; technician visit requested."
+  },
+  {
+    title: "Throttle Response Issue / Vehicle Not Moving",
+    category: "Controls",
+    steps: [
+      "Verify Brake Switch sensor status (if brake is pressed/stuck, motor disables).",
+      "Check Mode switch selection (Economy / City / Sports).",
+      "Inspect Throttle (Accelerator) wiring connector for looseness or damage.",
+      "Check side stand sensor status (if equipped)."
+    ],
+    callRemark: "Guided driver to release brake lever & toggle mode switch. Throttle responsiveness restored.",
+    visitRemark: "Vehicle power ON but no throttle movement. Brake cut-off & throttle plug checked. Technician visit created."
+  },
+  {
+    title: "Meter Console / Speedometer Disconnected or Blank",
+    category: "Electrical",
+    steps: [
+      "Check Display coupler/harness pin behind the front cowl.",
+      "Perform hard restart via MCB toggle.",
+      "Check CAN communication wiring from VCU/MCU to Meter."
+    ],
+    callRemark: "Meter display reset performed by re-plugging coupler & MCB cycle. Display restored.",
+    visitRemark: "Meter blank/glitching. Couplers checked by driver. Technician assigned for cluster/harness check."
+  },
+  {
+    title: "Brake Jam / Vehicle Heavy Driving",
+    category: "Brakes",
+    steps: [
+      "Check physical brake play (front/rear drum or disc clearance).",
+      "Verify brake shoe release springs and cable tension.",
+      "Check if regenerative braking cut-off switch is stuck."
+    ],
+    callRemark: "Adjusted brake cable play over guidance. Wheels rotating freely now.",
+    visitRemark: "Brake dragging/jammed physically. Requires mechanic intervention for shoe/caliper overhaul."
+  },
+  {
+    title: "Motor Jerking / Abnormal Noise during Movement",
+    category: "Movement",
+    steps: [
+      "Check Phase wire connections between Controller and Motor.",
+      "Inspect Hall sensor connector pin integrity.",
+      "Verify tyre pressure and rim alignment."
+    ],
+    callRemark: "Loose coupler re-plugged on controller side. Jerking resolved.",
+    visitRemark: "Motor jerking under load. Hall sensor/Phase wiring suspected. Escalated for physical visit."
+  },
+  {
+    title: "Battery Level Dropping Fast / Low Range",
+    category: "Battery",
+    steps: [
+      "Verify actual KM driven per SOC percentage drop.",
+      "Check tyre pressure (recommended 40-45 PSI).",
+      "Confirm load capacity (overloading decreases range significantly).",
+      "Ensure full charging (100% FC) is performed."
+    ],
+    callRemark: "Explained range variables & verified tyre pressure/load. Driver advised to monitor for 2 days.",
+    visitRemark: "Severe range drop reported (<30km on full SOC). Escalated for battery health test visit."
+  },
+  {
+    title: "Headlight / Indicator / Horn Not Working",
+    category: "Electrical",
+    steps: [
+      "Check 12V DC-DC Converter output voltage.",
+      "Inspect respective switch contacts on handlebar.",
+      "Check 12V fuse box for blown fuses."
+    ],
+    callRemark: "Replaced blown 12V auxiliary fuse over guide. Lights and horn functioning.",
+    visitRemark: "12V system partial/full failure. DC-DC converter or harness fault. Assigned field visit."
+  }
+];
+
+let activeMaasCat = "All";
+
+function getMaaSFilterCategories() {
+  let cats = ["All"];
+  maasData.forEach(item => {
+    if (!cats.includes(item.category)) cats.push(item.category);
+  });
+  return cats;
+}
+
+function renderMaaSCategories() {
+  let container = document.getElementById('maas-cat-filters');
+  let categories = getMaaSFilterCategories();
+  
+  container.innerHTML = categories.map(cat => `
+    <button class="filter-btn ${cat === activeMaasCat ? 'active' : ''}" onclick="filterMaaSCat('${cat}', this)">${cat}</button>
+  `).join('');
+}
+
+function filterMaaSCat(cat, btn) {
+  activeMaasCat = cat;
+  document.querySelectorAll('#maas-cat-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderMaaS();
+}
+
+function renderMaaS() {
+  renderMaaSCategories();
+  let query = document.getElementById('maasSearch').value.toLowerCase();
+  let container = document.getElementById('maas-grid-container');
+
+  let filtered = maasData.filter(item => {
+    let matchesSearch = item.title.toLowerCase().includes(query) || 
+                          item.category.toLowerCase().includes(query) ||
+                          item.steps.some(s => s.toLowerCase().includes(query));
+    let matchesCat = (activeMaasCat === "All") || (item.category === activeMaasCat);
+    return matchesSearch && matchesCat;
+  });
+
+  // Calculate stats
+  let totalIssues = filtered.length;
+  let totalChecks = filtered.reduce((acc, curr) => acc + curr.steps.length, 0);
+
+  document.getElementById('maas-total-issues').innerText = totalIssues;
+  document.getElementById('maas-total-checks').innerText = totalChecks;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #7f8c8d;">No matching MaaS diagnostics found.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map((item, idx) => `
+    <div class="maas-card">
+      <div>
+        <div class="maas-card-title">
+          <span>${item.title}</span>
+          <span class="maas-card-cat">${item.category}</span>
+        </div>
+        <ol class="maas-steps">
+          ${item.steps.map(step => `<li>${step}</li>`).join('')}
+        </ol>
+      </div>
+
+      <div>
+        <div class="maas-remarks">
+          <b>On-Call Remark:</b> ${item.callRemark}
+        </div>
+        <div class="maas-actions">
+          <button class="maas-btn btn-call" onclick="copyToClipboard('${escapeQuotes(item.callRemark)}')">Resolved on Call</button>
+          <button class="maas-btn btn-visit" onclick="copyToClipboard('${escapeQuotes(item.visitRemark)}')">Visit Required</button>
+          <button class="maas-btn btn-steps" onclick="copyToClipboard('${escapeQuotes(item.steps.join(' | '))}')">Copy Steps</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeQuotes(str) {
+  return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+}
+
+function resetMaaSFilters() {
+  document.getElementById('maasSearch').value = '';
+  activeMaasCat = 'All';
+  renderMaaS();
+}
+
+function copyVisibleMaasRemarks() {
+  let query = document.getElementById('maasSearch').value.toLowerCase();
+  let filtered = maasData.filter(item => {
+    let matchesSearch = item.title.toLowerCase().includes(query) || 
+                          item.category.toLowerCase().includes(query);
+    let matchesCat = (activeMaasCat === "All") || (item.category === activeMaasCat);
+    return matchesSearch && matchesCat;
+  });
+
+  let text = filtered.map(i => `[${i.title}]\nCall Remark: ${i.callRemark}\nVisit Remark: ${i.visitRemark}`).join('\n\n');
+  copyToClipboard(text);
+}
+
+// Initial initialization on window load
+window.onload = function() {
+  renderMaaS();
+};
 </script>
 
 </body>
