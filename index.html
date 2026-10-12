@@ -65,9 +65,7 @@
     transition: all 0.3s ease;
   }
 
-  .main-nav-btn:hover {
-    background: #4a6278;
-  }
+  .main-nav-btn:hover { background: #4a6278; }
 
   .main-nav-btn.active {
     background: var(--primary);
@@ -76,13 +74,8 @@
   }
 
   /* Sub-Section Display */
-  .section-container {
-    display: none;
-  }
-
-  .section-container.active {
-    display: block;
-  }
+  .section-container { display: none; }
+  .section-container.active { display: block; }
 
   h1 { 
     text-align: center; 
@@ -139,9 +132,7 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
+  .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
 
   .card-header { 
     padding: 14px 18px; 
@@ -154,21 +145,9 @@
     user-select: none;
   }
 
-  .card-header .header-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .card-header::after {
-    content: '▼';
-    font-size: 12px;
-    transition: transform 0.25s ease;
-  }
-
-  .card.open .card-header::after {
-    transform: rotate(180deg);
-  }
+  .card-header .header-title { display: flex; align-items: center; gap: 10px; }
+  .card-header::after { content: '▼'; font-size: 12px; transition: transform 0.25s ease; }
+  .card.open .card-header::after { transform: rotate(180deg); }
 
   .card-content { 
     display: none; 
@@ -178,9 +157,7 @@
     transition: all 0.3s ease-in-out;
   }
 
-  .card.open .card-content {
-    display: block;
-  }
+  .card.open .card-content { display: block; }
 
   /* Category Classes */
   .battery { background: var(--battery-color); }
@@ -303,18 +280,9 @@
     border-bottom: 1px solid #dddddd;
   }
 
-  .styled-table tbody tr:nth-of-type(even) {
-    background-color: #f8f9fa;
-  }
-
-  .styled-table tbody tr:last-of-type {
-    border-bottom: 2px solid var(--primary);
-  }
-
-  .styled-table tbody tr.highlight-row {
-    background-color: #eaf2f8;
-    font-weight: bold;
-  }
+  .styled-table tbody tr:nth-of-type(even) { background-color: #f8f9fa; }
+  .styled-table tbody tr:last-of-type { border-bottom: 2px solid var(--primary); }
+  .styled-table tbody tr.highlight-row { background-color: #eaf2f8; font-weight: bold; }
 
   /* MaaS Specific Styles */
   .maas-header {
@@ -359,17 +327,8 @@
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.04);
   }
-  .stat-num {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--primary);
-  }
-  .stat-label {
-    font-size: 12px;
-    color: #7f8c8d;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
+  .stat-num { font-size: 22px; font-weight: 800; color: var(--primary); }
+  .stat-label { font-size: 12px; color: #7f8c8d; text-transform: uppercase; font-weight: 600; }
 
   .maas-grid {
     display: grid;
@@ -408,13 +367,6 @@
     font-weight: 700;
   }
 
-  .maas-steps {
-    margin: 10px 0;
-    padding-left: 20px;
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
   .maas-remarks {
     background: #f8f9fa;
     padding: 10px;
@@ -424,15 +376,12 @@
     border-left: 3px solid var(--primary);
   }
 
-  .maas-actions {
-    display: flex;
-    gap: 6px;
-    margin-top: 12px;
-  }
+  .maas-actions { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
 
   .maas-btn {
     flex: 1;
-    padding: 6px 10px;
+    min-width: 90px;
+    padding: 8px 10px;
     border: none;
     border-radius: 4px;
     font-size: 11px;
@@ -442,7 +391,60 @@
   }
   .btn-call { background: #27ae60; color: white; }
   .btn-visit { background: #e74c3c; color: white; }
-  .btn-steps { background: #34495e; color: white; }
+  .btn-submit-sheet { background: #0066cc; color: white; }
+  .btn-submit-sheet:hover { background: #004c99; }
+
+  /* Case ID & Agent ID Bar */
+  .case-id-bar {
+    display: flex;
+    gap: 12px;
+    background: white;
+    padding: 14px 18px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    margin-bottom: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .case-id-bar input {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 13px;
+    flex: 1;
+    min-width: 180px;
+  }
+
+  /* MaaS Interactive Data Capture Styles */
+  .step-list { list-style: none; padding: 0; margin: 10px 0; }
+  .step-item {
+    background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px;
+    padding: 10px; margin-bottom: 10px; transition: all 0.2s ease;
+  }
+  .step-item.completed { border-left: 4px solid var(--normal-color); background: #f0fff4; }
+  .step-item.failed { border-left: 4px solid var(--battery-color); background: #fff5f5; }
+
+  .step-header { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; font-weight: 600; }
+  .step-checkbox { width: 18px; height: 18px; cursor: pointer; margin-top: 2px; }
+
+  .step-controls { display: flex; gap: 8px; margin-top: 8px; align-items: center; }
+  .status-select {
+    padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px; font-weight: 600; outline: none;
+  }
+  .remark-input {
+    flex: 1; padding: 5px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px; outline: none;
+  }
+
+  /* Quick Keywords Pill Bar */
+  .keyword-bar-label { font-size: 11px; font-weight: 700; color: #7f8c8d; margin-top: 8px; text-transform: uppercase; }
+  .keyword-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .tag-pill {
+    background: #eef6ff; color: var(--primary); border: 1px solid #cce4ff;
+    border-radius: 12px; padding: 2px 8px; font-size: 11px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s ease; user-select: none;
+  }
+  .tag-pill:hover { background: var(--primary); color: white; }
+  .tag-pill.selected { background: var(--primary-dark); color: white; border-color: var(--primary-dark); }
 
   /* Toast Popup */
   #toast {
@@ -1010,14 +1012,21 @@
         <span>MAAS Remote Diagnostic Team Handbook</span>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button class="action-btn" onclick="copyVisibleMaasRemarks()">📋 Copy Visible Remarks</button>
         <button class="action-btn" onclick="resetMaaSFilters()">🔄 Reset</button>
       </div>
     </div>
 
+    <!-- Case ID & Agent ID Capture Bar -->
+    <div class="case-id-bar">
+      <label><b>Case ID:</b></label>
+      <input type="text" id="globalCaseId" placeholder="Enter Case/Ticket ID (e.g., CAS-98412)">
+      <label><b>Agent ID:</b></label>
+      <input type="text" id="globalAgentId" placeholder="Enter Your Agent ID (e.g., AGT-104)">
+    </div>
+
     <!-- Notice Tip -->
     <div class="rule">
-      💡 <b>Tip:</b> Direct search using short queries like "meter", "mcb", "brake", "vcu", or "throttle". Click buttons on cards to instantly copy system remarks or resolution steps.
+      💡 <b>Tip:</b> Direct search using short queries like "meter", "mcb", "brake", "vcu", or "throttle". Tick step checkboxes and click keyword tags to auto-generate system remarks!
     </div>
 
     <!-- Stats Panel -->
@@ -1055,6 +1064,9 @@
 
 <script>
 
+// PUBLIC WEB APP URL FOR GOOGLE SHEET LOGGING
+const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwl544hekzgiXqeGDhywa6uP0etJ4kVZFyX57AiAfpi5_bqg9Gcz-hsaS330ihkPpAm/exec";
+
 // --- MAIN TAB SWITCHING ---
 function switchMainTab(tabName, btn) {
   document.querySelectorAll('.main-nav-btn').forEach(b => b.classList.remove('active'));
@@ -1065,7 +1077,7 @@ function switchMainTab(tabName, btn) {
     document.getElementById('baas-section').classList.add('active');
   } else {
     document.getElementById('maas-section').classList.add('active');
-    renderMaaS(); // Refresh/Render MaaS Grid when tab becomes active
+    renderMaaS();
   }
 }
 
@@ -1147,13 +1159,11 @@ function filterErrors() {
 // --- COPY TO CLIPBOARD ---
 function copyText(button) {
   let container = button.parentElement;
-  // Clone element to manipulate text without copy button text
   let clone = container.cloneNode(true);
   let btns = clone.querySelectorAll('button');
   btns.forEach(b => b.remove());
 
   let textToCopy = clone.innerText.trim();
-  
   copyToClipboard(textToCopy);
 }
 
@@ -1178,11 +1188,11 @@ function showToast(msg) {
   setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 2500);
 }
 
-
-// ================= MAAS HANDBOOK DATA & ENGINE =================
+// ================= MAAS INTERACTIVE DIAGNOSTIC DATA & ENGINE =================
 
 const maasData = [
   {
+    id: "starting_dead",
     title: "Vehicle Not Starting (Key ON, No Display / Dead)",
     category: "Starting",
     steps: [
@@ -1195,6 +1205,7 @@ const maasData = [
     visitRemark: "Key ON display dead. MCB & connections verified by driver. Issue unresolved; technician visit requested."
   },
   {
+    id: "throttle_issue",
     title: "Throttle Response Issue / Vehicle Not Moving",
     category: "Controls",
     steps: [
@@ -1207,6 +1218,7 @@ const maasData = [
     visitRemark: "Vehicle power ON but no throttle movement. Brake cut-off & throttle plug checked. Technician visit created."
   },
   {
+    id: "meter_blank",
     title: "Meter Console / Speedometer Disconnected or Blank",
     category: "Electrical",
     steps: [
@@ -1218,6 +1230,7 @@ const maasData = [
     visitRemark: "Meter blank/glitching. Couplers checked by driver. Technician assigned for cluster/harness check."
   },
   {
+    id: "brake_jam",
     title: "Brake Jam / Vehicle Heavy Driving",
     category: "Brakes",
     steps: [
@@ -1229,6 +1242,7 @@ const maasData = [
     visitRemark: "Brake dragging/jammed physically. Requires mechanic intervention for shoe/caliper overhaul."
   },
   {
+    id: "motor_jerking",
     title: "Motor Jerking / Abnormal Noise during Movement",
     category: "Movement",
     steps: [
@@ -1240,6 +1254,7 @@ const maasData = [
     visitRemark: "Motor jerking under load. Hall sensor/Phase wiring suspected. Escalated for physical visit."
   },
   {
+    id: "low_range",
     title: "Battery Level Dropping Fast / Low Range",
     category: "Battery",
     steps: [
@@ -1252,6 +1267,7 @@ const maasData = [
     visitRemark: "Severe range drop reported (<30km on full SOC). Escalated for battery health test visit."
   },
   {
+    id: "lights_horn_dead",
     title: "Headlight / Indicator / Horn Not Working",
     category: "Electrical",
     steps: [
@@ -1264,6 +1280,16 @@ const maasData = [
   }
 ];
 
+const recommendedKeywords = {
+  "Starting": ["MCB_TRIPPED", "KEY_SWITCH_LOOSE", "DC_DC_DEAD", "AUX_FUSE_BLOWN", "BATTERY_DRAINED", "SOC_CRITICAL"],
+  "Controls": ["BRAKE_SENSOR_STUCK", "MODE_SWITCH_FAULT", "THROTTLE_PIN_LOOSE", "SIDE_STAND_ACTIVE", "WIRE_CUT"],
+  "Electrical": ["COUPLER_DISCONNECTED", "CAN_COMM_ERROR", "CLUSTER_BLANK", "HARNESS_CORRODED", "12V_LINE_FAULT"],
+  "Brakes": ["BRAKE_CABLE_JAMMED", "SHOE_WEAR_HIGH", "REGEN_SWITCH_STUCK", "CALIPER_DRAGGING"],
+  "Movement": ["PHASE_WIRE_LOOSE", "HALL_SENSOR_FAULT", "MOTOR_BEARING_NOISE", "TIRE_PRESSURE_LOW"],
+  "Battery": ["RANGE_DROP_SEVERE", "TIRE_PSI_LOW", "OVERLOADED", "FC_NOT_COMPLETED"]
+};
+
+const activeTags = {};
 let activeMaasCat = "All";
 
 function getMaaSFilterCategories() {
@@ -1303,42 +1329,190 @@ function renderMaaS() {
     return matchesSearch && matchesCat;
   });
 
-  // Calculate stats
-  let totalIssues = filtered.length;
-  let totalChecks = filtered.reduce((acc, curr) => acc + curr.steps.length, 0);
-
-  document.getElementById('maas-total-issues').innerText = totalIssues;
-  document.getElementById('maas-total-checks').innerText = totalChecks;
+  document.getElementById('maas-total-issues').innerText = filtered.length;
+  document.getElementById('maas-total-checks').innerText = filtered.reduce((acc, curr) => acc + curr.steps.length, 0);
 
   if (filtered.length === 0) {
     container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #7f8c8d;">No matching MaaS diagnostics found.</div>`;
     return;
   }
 
-  container.innerHTML = filtered.map((item, idx) => `
-    <div class="maas-card">
-      <div>
-        <div class="maas-card-title">
-          <span>${item.title}</span>
-          <span class="maas-card-cat">${item.category}</span>
-        </div>
-        <ol class="maas-steps">
-          ${item.steps.map(step => `<li>${step}</li>`).join('')}
-        </ol>
-      </div>
+  container.innerHTML = filtered.map((item) => {
+    const keywords = recommendedKeywords[item.category] || ["OTHER_ISSUE"];
+    const cardId = item.id;
 
-      <div>
-        <div class="maas-remarks">
-          <b>On-Call Remark:</b> ${item.callRemark}
+    return `
+      <div class="maas-card">
+        <div>
+          <div class="maas-card-title">
+            <span>${item.title}</span>
+            <span class="maas-card-cat">${item.category}</span>
+          </div>
+
+          <ul class="step-list">
+            ${item.steps.map((step, sIdx) => `
+              <li class="step-item" id="step-box-${cardId}-${sIdx}">
+                <div class="step-header">
+                  <input type="checkbox" class="step-checkbox" id="check-${cardId}-${sIdx}" onchange="updateStepState('${cardId}',${sIdx})">
+                  <label for="check-${cardId}-${sIdx}">${step}</label>
+                </div>
+                <div class="step-controls">
+                  <select class="status-select" id="status-${cardId}-${sIdx}" onchange="updateStepState('${cardId}',${sIdx})">
+                    <option value="Passed">Passed</option>
+                    <option value="Failed">Failed</option>
+                    <option value="Skipped">Skipped</option>
+                  </select>
+                  <input type="text" class="remark-input" id="note-${cardId}-${sIdx}" placeholder="Step note..." oninput="generateSystemRemark('${cardId}')">
+                </div>
+              </li>
+            `).join('')}
+          </ul>
+
+          <div class="keyword-bar-label">Recommended Keywords:</div>
+          <div class="keyword-container">
+            ${keywords.map(kw => `
+              <span class="tag-pill" onclick="toggleKeywordTag('${cardId}', '${kw}', this)">+ ${kw}</span>
+            `).join('')}
+          </div>
         </div>
-        <div class="maas-actions">
-          <button class="maas-btn btn-call" onclick="copyToClipboard('${escapeQuotes(item.callRemark)}')">Resolved on Call</button>
-          <button class="maas-btn btn-visit" onclick="copyToClipboard('${escapeQuotes(item.visitRemark)}')">Visit Required</button>
-          <button class="maas-btn btn-steps" onclick="copyToClipboard('${escapeQuotes(item.steps.join(' | '))}')">Copy Steps</button>
+
+        <div>
+          <div class="maas-remarks" id="output-${cardId}">
+            <b>Generated Remark:</b> Perform diagnostic steps above to auto-compile ticket remark.
+          </div>
+          <div class="maas-actions">
+            <button class="maas-btn btn-call" onclick="copyCompiledRemark('${cardId}', 'Call Resolved', '${escapeQuotes(item.callRemark)}')">Resolved on Call</button>
+            <button class="maas-btn btn-visit" onclick="copyCompiledRemark('${cardId}', 'Escalated Visit', '${escapeQuotes(item.visitRemark)}')">Visit Required</button>
+            <button class="maas-btn btn-submit-sheet" onclick="submitToGoogleSheet('${cardId}')">📊 Submit Sheet</button>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
+}
+
+function toggleKeywordTag(cardId, keyword, pillElement) {
+  if (!activeTags[cardId]) activeTags[cardId] = new Set();
+  
+  if (activeTags[cardId].has(keyword)) {
+    activeTags[cardId].delete(keyword);
+    pillElement.classList.remove('selected');
+    pillElement.innerText = `+ ${keyword}`;
+  } else {
+    activeTags[cardId].add(keyword);
+    pillElement.classList.add('selected');
+    pillElement.innerText = `✓ ${keyword}`;
+  }
+  generateSystemRemark(cardId);
+}
+
+function updateStepState(cardId, stepIdx) {
+  const isChecked = document.getElementById(`check-${cardId}-${stepIdx}`).checked;
+  const status = document.getElementById(`status-${cardId}-${stepIdx}`).value;
+  const stepBox = document.getElementById(`step-box-${cardId}-${stepIdx}`);
+
+  stepBox.classList.remove('completed', 'failed');
+  if (isChecked) {
+    if (status === 'Failed') stepBox.classList.add('failed');
+    else stepBox.classList.add('completed');
+  }
+  generateSystemRemark(cardId);
+}
+
+function generateSystemRemark(cardId) {
+  const item = maasData.find(x => x.id === cardId);
+  if (!item) return;
+
+  const checkedSteps = [];
+  let hasFailure = false;
+
+  item.steps.forEach((_, sIdx) => {
+    const isChecked = document.getElementById(`check-${cardId}-${sIdx}`)?.checked;
+    const status = document.getElementById(`status-${cardId}-${sIdx}`)?.value;
+    const note = document.getElementById(`note-${cardId}-${sIdx}`)?.value.trim();
+
+    if (isChecked) {
+      if (status === 'Failed') hasFailure = true;
+      checkedSteps.push(`Step ${sIdx + 1} (${status}${note ? `: ${note}` : ''})`);
+    }
+  });
+
+  const tags = activeTags[cardId] ? Array.from(activeTags[cardId]) : [];
+  const tagString = tags.length > 0 ? ` [Tags: ${tags.join(', ')}]` : '';
+
+  let summaryText = "";
+  if (checkedSteps.length === 0) {
+    summaryText = "<b>Generated Remark:</b> Perform diagnostic steps above to auto-compile ticket remark.";
+  } else {
+    const statusLabel = hasFailure ? "ISSUES DETECTED - ESCALATE" : "DIAGNOSTICS PASSED";
+    summaryText = `<b>Generated Remark (${statusLabel}):</b> Checked: ${checkedSteps.join('; ')}.${tagString}`;
+  }
+
+  document.getElementById(`output-${cardId}`).innerHTML = summaryText;
+}
+
+function copyCompiledRemark(cardId, statusType, fallbackRemark) {
+  const outputEl = document.getElementById(`output-${cardId}`);
+  let compiledText = outputEl.innerText.replace("Generated Remark:", "").trim();
+
+  if (compiledText.includes("Perform diagnostic steps above")) {
+    compiledText = fallbackRemark;
+  }
+
+  const finalCopy = `[${statusType.toUpperCase()}] ${compiledText}`;
+  copyToClipboard(finalCopy);
+}
+
+function submitToGoogleSheet(cardId) {
+  const caseId = document.getElementById('globalCaseId').value.trim();
+  const agentId = document.getElementById('globalAgentId').value.trim();
+
+  if (!caseId) {
+    alert("Please enter a Case ID before submitting!");
+    document.getElementById('globalCaseId').focus();
+    return;
+  }
+
+  const item = maasData.find(x => x.id === cardId);
+  if (!item) return;
+
+  const checkedSteps = [];
+  let hasFailure = false;
+
+  item.steps.forEach((stepText, sIdx) => {
+    const isChecked = document.getElementById(`check-${cardId}-${sIdx}`)?.checked;
+    const status = document.getElementById(`status-${cardId}-${sIdx}`)?.value || 'Passed';
+    const note = document.getElementById(`note-${cardId}-${sIdx}`)?.value.trim() || '';
+
+    if (isChecked) {
+      if (status === 'Failed') hasFailure = true;
+      checkedSteps.push(`Step ${sIdx + 1} (${stepText.split('(')[0].trim()}): ${status}${note ? ` [Note: ${note}]` : ''}`);
+    }
+  });
+
+  const tags = activeTags[cardId] ? Array.from(activeTags[cardId]).join(', ') : 'None';
+  const actionStatus = hasFailure ? "Escalated Visit" : (checkedSteps.length > 0 ? "Resolved on Call" : "No Steps Checked");
+  const capturedStepsString = checkedSteps.length > 0 ? checkedSteps.join(' | ') : 'No steps selected';
+
+  // Construct URL Parameters for robust CORS-free execution
+  const params = new URLSearchParams({
+    caseId: caseId,
+    agentId: agentId,
+    issueTitle: item.title,
+    category: item.category,
+    checkedSteps: capturedStepsString,
+    keywordTags: tags,
+    actionStatus: actionStatus
+  });
+
+  showToast("Submitting data to Google Sheet...");
+
+  fetch(`${GOOGLE_SHEET_WEB_APP_URL}?${params.toString()}`, {
+    method: "GET",
+    mode: "no-cors"
+  })
+  .then(() => showToast("✅ Successfully recorded in Google Sheet!"))
+  .catch(() => showToast("❌ Failed to submit to Google Sheet!"));
 }
 
 function escapeQuotes(str) {
@@ -1351,20 +1525,6 @@ function resetMaaSFilters() {
   renderMaaS();
 }
 
-function copyVisibleMaasRemarks() {
-  let query = document.getElementById('maasSearch').value.toLowerCase();
-  let filtered = maasData.filter(item => {
-    let matchesSearch = item.title.toLowerCase().includes(query) || 
-                          item.category.toLowerCase().includes(query);
-    let matchesCat = (activeMaasCat === "All") || (item.category === activeMaasCat);
-    return matchesSearch && matchesCat;
-  });
-
-  let text = filtered.map(i => `[${i.title}]\nCall Remark: ${i.callRemark}\nVisit Remark: ${i.visitRemark}`).join('\n\n');
-  copyToClipboard(text);
-}
-
-// Initial initialization on window load
 window.onload = function() {
   renderMaaS();
 };
