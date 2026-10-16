@@ -1198,8 +1198,8 @@ const maasData = [
     steps: [
       "Check MCB status in utility box (ensure turned ON).",
       "Check Ignition key switch and wire harness connection.",
-      "Inspect 12V auxiliary fuse / main DC-DC converter output.",
-      "Check battery connection & SOC level."
+      "Mosfet Is Off and turned ON",
+      "Took swap and resolved the issue"
     ],
     callRemark: "Guide driver to reset MCB & check battery connections. Vehicle turned ON successfully over call.",
     visitRemark: "Key ON display dead. MCB & connections verified by driver. Issue unresolved; technician visit requested."
@@ -1222,9 +1222,9 @@ const maasData = [
     title: "Meter Console / Speedometer Disconnected or Blank",
     category: "Electrical",
     steps: [
-      "Check Display coupler/harness pin behind the front cowl.",
+      "Resolved by Hide button press",
       "Perform hard restart via MCB toggle.",
-      "Check CAN communication wiring from VCU/MCU to Meter."
+      "Check CAN communication wiring from to Meter."
     ],
     callRemark: "Meter display reset performed by re-plugging coupler & MCB cycle. Display restored.",
     visitRemark: "Meter blank/glitching. Couplers checked by driver. Technician assigned for cluster/harness check."
@@ -1234,9 +1234,9 @@ const maasData = [
     title: "Brake Jam / Vehicle Heavy Driving",
     category: "Brakes",
     steps: [
-      "Check physical brake play (front/rear drum or disc clearance).",
-      "Verify brake shoe release springs and cable tension.",
-      "Check if regenerative braking cut-off switch is stuck."
+      "Tighten the rear brake and resolved the issue",
+      "Hit on front disc brake and resolved",
+      "Nut AND bolt CHECK"
     ],
     callRemark: "Adjusted brake cable play over guidance. Wheels rotating freely now.",
     visitRemark: "Brake dragging/jammed physically. Requires mechanic intervention for shoe/caliper overhaul."
@@ -1246,8 +1246,8 @@ const maasData = [
     title: "Motor Jerking / Abnormal Noise during Movement",
     category: "Movement",
     steps: [
-      "Check Phase wire connections between Controller and Motor.",
-      "Inspect Hall sensor connector pin integrity.",
+      "Resolved by Checking bolts if it is loose or not",
+      "Cleaned disc and noise resolved",
       "Verify tyre pressure and rim alignment."
     ],
     callRemark: "Loose coupler re-plugged on controller side. Jerking resolved.",
@@ -1258,7 +1258,7 @@ const maasData = [
     title: "Battery Level Dropping Fast / Low Range",
     category: "Battery",
     steps: [
-      "Verify actual KM driven per SOC percentage drop.",
+      "Swaped the battery and resolved the issue",
       "Check tyre pressure (recommended 40-45 PSI).",
       "Confirm load capacity (overloading decreases range significantly).",
       "Ensure full charging (100% FC) is performed."
@@ -1271,9 +1271,9 @@ const maasData = [
     title: "Headlight / Indicator / Horn Not Working",
     category: "Electrical",
     steps: [
-      "Check 12V DC-DC Converter output voltage.",
+      "if there is any contact of water then guided to use after sometime",
       "Inspect respective switch contacts on handlebar.",
-      "Check 12V fuse box for blown fuses."
+      "MCB check OFF/On and resolved the issue"
     ],
     callRemark: "Replaced blown 12V auxiliary fuse over guide. Lights and horn functioning.",
     visitRemark: "12V system partial/full failure. DC-DC converter or harness fault. Assigned field visit."
