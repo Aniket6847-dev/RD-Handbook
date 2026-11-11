@@ -284,6 +284,14 @@
   .styled-table tbody tr:last-of-type { border-bottom: 2px solid var(--primary); }
   .styled-table tbody tr.highlight-row { background-color: #eaf2f8; font-weight: bold; }
 
+  /* Table Pagination / Counter */
+  .table-summary {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
   /* MaaS Specific Styles */
   .maas-header {
     display: flex;
@@ -496,6 +504,7 @@
         <div class="tab" onclick="openTab(event,'errors')">Error Codes</div>
         <div class="tab" onclick="openTab(event,'welcome')">Welcome Call Script</div>
         <div class="tab" onclick="openTab(event,'charges')">Service & Charges</div>
+        <div class="tab" onclick="openTab(event,'maas-charges-tab')">MaaS Charges</div>
         <div class="tab" onclick="openTab(event,'smp')">SMP Plan</div>
       </div>
     </div>
@@ -880,6 +889,31 @@
       </div>
     </div>
 
+    <!-- MAAS CHARGES TAB -->
+    <div id="maas-charges-tab" class="tab-content">
+      <h2>🛵 MaaS Spare Parts & Service Charges</h2>
+      <p>Complete list of MaaS spare parts, categories, and service charges.</p>
+
+      <div class="toolbar">
+        <input type="text" class="search-box" id="maasChargesSearch" placeholder="Search Part Name (e.g., Throttle, Brake, Cable), Category..." onkeyup="filterMaasCharges()">
+      </div>
+
+      <div class="table-summary" id="maasChargesCount">Showing 0 parts</div>
+
+      <table class="styled-table" id="maasChargesTable">
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Part Name (SKU Name)</th>
+            <th>Service Charge (INR)</th>
+          </tr>
+        </thead>
+        <tbody id="maasChargesTbody">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
     <!-- SMP PLAN -->
     <div id="smp" class="tab-content">
       <h2>🛡️ Smart Maintenance Plan (SMP) - Do not use- Currently on HOLD</h2>
@@ -1066,6 +1100,446 @@
 
 // PUBLIC WEB APP URL FOR GOOGLE SHEET LOGGING
 const GOOGLE_SHEET_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwl544hekzgiXqeGDhywa6uP0etJ4kVZFyX57AiAfpi5_bqg9Gcz-hsaS330ihkPpAm/exec";
+
+// --- MAAS CHARGES DATA ---
+const maasChargesData = [
+  {"category":"Brake Sensor","skuName":"Brake Sensor Cut-off - E-Oxigen","serviceCharge":30},
+  {"category":"Brake Sensor","skuName":"Brake Sensor Cut-off - E-Sprinto","serviceCharge":30},
+  {"category":"Brake Sensor","skuName":"Brake Sensor Cut-off - Electric-Pe","serviceCharge":30},
+  {"category":"Brake Sensor","skuName":"Brake Sensor Cut-off - Kaikan","serviceCharge":30},
+  {"category":"Brake Sensor","skuName":"Brake Sensor Cut-off - Stella","serviceCharge":30},
+  {"category":"Charger Adapter","skuName":"Vecmocon Charger Adapter","serviceCharge":60},
+  {"category":"Charging Socket","skuName":"Charging Socket - E-Oxigen","serviceCharge":48},
+  {"category":"Charging Socket","skuName":"Charging Socket - E-Sprinto","serviceCharge":48},
+  {"category":"Charging Socket","skuName":"Charging Socket - Electric-Pe","serviceCharge":48},
+  {"category":"Charging Socket","skuName":"Charging Socket - Kaikan","serviceCharge":48},
+  {"category":"Charging Socket","skuName":"Charging Socket - Stella","serviceCharge":48},
+  {"category":"Controller","skuName":"Controller - E-Oxigen","serviceCharge":0},
+  {"category":"Controller","skuName":"Controller - E-Sprinto","serviceCharge":0},
+  {"category":"Controller","skuName":"Controller - Electric-Pe","serviceCharge":0},
+  {"category":"Controller","skuName":"Controller - Kaikan","serviceCharge":0},
+  {"category":"Controller","skuName":"Controller - Stella","serviceCharge":0},
+  {"category":"Cruise Switch","skuName":"Cruise Switch - E-Oxigen","serviceCharge":42},
+  {"category":"Cruise Switch","skuName":"Cruise Switch - E-Sprinto","serviceCharge":42},
+  {"category":"Cruise Switch","skuName":"Cruise Switch - Electric-Pe","serviceCharge":42},
+  {"category":"Cruise Switch","skuName":"Cruise Switch - Kaikan","serviceCharge":42},
+  {"category":"Cruise Switch","skuName":"Cruise Switch - Stella","serviceCharge":42},
+  {"category":"DC-DC Converter","skuName":"DC-DC Converter - E-Oxigen","serviceCharge":180},
+  {"category":"DC-DC Converter","skuName":"DC-DC Converter - E-Sprinto","serviceCharge":180},
+  {"category":"DC-DC Converter","skuName":"DC-DC Converter - Electric-Pe","serviceCharge":180},
+  {"category":"DC-DC Converter","skuName":"DC-DC Converter - Kaikan","serviceCharge":180},
+  {"category":"DC-DC Converter","skuName":"DC-DC Converter - Stella","serviceCharge":180},
+  {"category":"Display Assembly","skuName":"Display Assembly - E-Oxigen","serviceCharge":417},
+  {"category":"Display Assembly","skuName":"Display Assembly - E-Sprinto","serviceCharge":417},
+  {"category":"Display Assembly","skuName":"Display Assembly - Electric-Pe","serviceCharge":417},
+  {"category":"Display Assembly","skuName":"Display Assembly - Kaikan","serviceCharge":417},
+  {"category":"Display Assembly","skuName":"Display Assembly - Stella","serviceCharge":417},
+  {"category":"Draw Bar","skuName":"Draw Bar - E-Oxigen","serviceCharge":600},
+  {"category":"Draw Bar","skuName":"Draw Bar - E-Sprinto","serviceCharge":600},
+  {"category":"Draw Bar","skuName":"Draw Bar - Electric-Pe","serviceCharge":600},
+  {"category":"Draw Bar","skuName":"Draw Bar - Kaikan","serviceCharge":600},
+  {"category":"Draw Bar","skuName":"Draw Bar - Stella","serviceCharge":600},
+  {"category":"DRL Holder","skuName":"DRL Holder - E-Oxigen","serviceCharge":60},
+  {"category":"DRL Holder","skuName":"DRL Holder - E-Sprinto","serviceCharge":60},
+  {"category":"DRL Holder","skuName":"DRL Holder - Electric-Pe","serviceCharge":60},
+  {"category":"DRL Holder","skuName":"DRL Holder - Kaikan","serviceCharge":60},
+  {"category":"DRL Holder","skuName":"DRL Holder - Stella","serviceCharge":60},
+  {"category":"Flasher","skuName":"Flasher","serviceCharge":45},
+  {"category":"General Purpose Relay","skuName":"General Purpose Relay","serviceCharge":75},
+  {"category":"Grip","skuName":"Grip","serviceCharge":60},
+  {"category":"Harness","skuName":"Battery Harness","serviceCharge":550},
+  {"category":"Headlight Assembly","skuName":"Headlight Assembly - E-Oxigen","serviceCharge":901},
+  {"category":"Headlight Assembly","skuName":"Headlight Assembly - E-Sprinto","serviceCharge":901},
+  {"category":"Headlight Assembly","skuName":"Headlight Assembly - Electric-Pe","serviceCharge":901},
+  {"category":"Headlight Assembly","skuName":"Headlight Assembly - Kaikan","serviceCharge":901},
+  {"category":"Headlight Assembly","skuName":"Headlight Assembly - Stella","serviceCharge":901},
+  {"category":"Headlight Bulb","skuName":"Headlight Bulb","serviceCharge":26},
+  {"category":"Headlight Switch","skuName":"Headlight Switch - E-Oxigen","serviceCharge":42},
+  {"category":"Headlight Switch","skuName":"Headlight Switch - E-Sprinto","serviceCharge":42},
+  {"category":"Headlight Switch","skuName":"Headlight Switch - Electric-Pe","serviceCharge":42},
+  {"category":"Headlight Switch","skuName":"Headlight Switch - Kaikan","serviceCharge":42},
+  {"category":"Headlight Switch","skuName":"Headlight Switch - Stella","serviceCharge":42},
+  {"category":"High Low Beam Switch","skuName":"High Low Beam Switch - E-Oxigen","serviceCharge":42},
+  {"category":"High Low Beam Switch","skuName":"High Low Beam Switch - E-Sprinto","serviceCharge":42},
+  {"category":"High Low Beam Switch","skuName":"High Low Beam Switch - Electric-Pe","serviceCharge":42},
+  {"category":"High Low Beam Switch","skuName":"High Low Beam Switch - Kaikan","serviceCharge":42},
+  {"category":"High Low Beam Switch","skuName":"High Low Beam Switch - Stella","serviceCharge":42},
+  {"category":"Horn","skuName":"Horn","serviceCharge":71},
+  {"category":"Horn Switch","skuName":"Horn Switch 2 pin","serviceCharge":42},
+  {"category":"Horn Switch","skuName":"Horn Switch 4 pin","serviceCharge":42},
+  {"category":"Ignition Lock","skuName":"Ignition Lock","serviceCharge":250},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly LH - E-Oxigen","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly LH - E-Sprinto","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly LH - Electric-Pe","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly LH - Kaikan","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly LH - Stella","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly RH - E-Oxigen","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly RH - E-Sprinto","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly RH - Electric-Pe","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly RH - Kaikan","serviceCharge":432},
+  {"category":"Indicator Assembly","skuName":"Indicator Assembly RH - Stella","serviceCharge":432},
+  {"category":"Indicator Buzzer","skuName":"Indicator Buzzer","serviceCharge":103},
+  {"category":"Indicator Holder Set","skuName":"Indicator Holder Set - E-Oxigen","serviceCharge":80},
+  {"category":"Indicator Holder Set","skuName":"Indicator Holder Set - E-Sprinto","serviceCharge":80},
+  {"category":"Indicator Holder Set","skuName":"Indicator Holder Set - Electric-Pe","serviceCharge":80},
+  {"category":"Indicator Holder Set","skuName":"Indicator Holder Set - Kaikan","serviceCharge":80},
+  {"category":"Indicator Holder Set","skuName":"Indicator Holder Set - Stella","serviceCharge":80},
+  {"category":"Indicator Switch","skuName":"Indicator Switch","serviceCharge":32},
+  {"category":"MCB","skuName":"MCB","serviceCharge":119},
+  {"category":"Meter","skuName":"SOC Meter","serviceCharge":200},
+  {"category":"Motor","skuName":"Motor - E-Oxigen","serviceCharge":0},
+  {"category":"Motor","skuName":"Motor - E-Sprinto","serviceCharge":0},
+  {"category":"Motor","skuName":"Motor - Electric-Pe","serviceCharge":0},
+  {"category":"Motor","skuName":"Motor - Kaikan","serviceCharge":0},
+  {"category":"Motor","skuName":"Motor - Stella","serviceCharge":0},
+  {"category":"Motor Cover","skuName":"Motor Cover - E-Oxigen","serviceCharge":150},
+  {"category":"Motor Cover","skuName":"Motor Cover - E-Sprinto","serviceCharge":150},
+  {"category":"Motor Cover","skuName":"Motor Cover - Electric-Pe","serviceCharge":150},
+  {"category":"Motor Cover","skuName":"Motor Cover - Kaikan","serviceCharge":150},
+  {"category":"Motor Cover","skuName":"Motor Cover - Stella","serviceCharge":150},
+  {"category":"Motor Hall Sensor","skuName":"Motor Hall Sensor - E-Oxigen","serviceCharge":0},
+  {"category":"Motor Hall Sensor","skuName":"Motor Hall Sensor - E-Sprinto","serviceCharge":0},
+  {"category":"Motor Hall Sensor","skuName":"Motor Hall Sensor - Electric-Pe","serviceCharge":0},
+  {"category":"Motor Hall Sensor","skuName":"Motor Hall Sensor - Kaikan","serviceCharge":0},
+  {"category":"Motor Hall Sensor","skuName":"Motor Hall Sensor - Stella","serviceCharge":0},
+  {"category":"Motor Wire Assembly","skuName":"Motor Wire Assembly","serviceCharge":0},
+  {"category":"MTR","skuName":"Can Volt Meters For Rickshaws","serviceCharge":160},
+  {"category":"Reflector","skuName":"Rectangular Reflector - E-Oxigen","serviceCharge":26},
+  {"category":"Reflector","skuName":"Rectangular Reflector - E-Sprinto","serviceCharge":26},
+  {"category":"Reflector","skuName":"Rectangular Reflector - Electric-Pe","serviceCharge":26},
+  {"category":"Reflector","skuName":"Rectangular Reflector - Kaikan","serviceCharge":26},
+  {"category":"Reflector","skuName":"Rectangular Reflector - Stella","serviceCharge":26},
+  {"category":"Reflector","skuName":"Round Reflector - E-Oxigen","serviceCharge":52},
+  {"category":"Reflector","skuName":"Round Reflector - E-Sprinto","serviceCharge":52},
+  {"category":"Reflector","skuName":"Round Reflector - Electric-Pe","serviceCharge":52},
+  {"category":"Reflector","skuName":"Round Reflector - Kaikan","serviceCharge":52},
+  {"category":"Reflector","skuName":"Round Reflector - Stella","serviceCharge":52},
+  {"category":"Soldering Paste","skuName":"Soldering Paste","serviceCharge":10},
+  {"category":"Soldering Wire","skuName":"Soldering Wire","serviceCharge":30},
+  {"category":"Speedometer","skuName":"Speedometer - E-Oxigen","serviceCharge":417},
+  {"category":"Speedometer","skuName":"Speedometer - E-Sprinto","serviceCharge":417},
+  {"category":"Speedometer","skuName":"Speedometer - Electric-Pe","serviceCharge":417},
+  {"category":"Speedometer","skuName":"Speedometer - Kaikan","serviceCharge":417},
+  {"category":"Speedometer","skuName":"Speedometer - Stella","serviceCharge":417},
+  {"category":"Tail Light Assembly","skuName":"Tail Light Assembly - E-Oxigen","serviceCharge":514},
+  {"category":"Tail Light Assembly","skuName":"Tail Light Assembly - E-Sprinto","serviceCharge":514},
+  {"category":"Tail Light Assembly","skuName":"Tail Light Assembly - Electric-Pe","serviceCharge":514},
+  {"category":"Tail Light Assembly","skuName":"Tail Light Assembly - Kaikan","serviceCharge":514},
+  {"category":"Tail Light Assembly","skuName":"Tail Light Assembly - Stella","serviceCharge":514},
+  {"category":"Tail Light Bulb","skuName":"Tail Light Bulb","serviceCharge":81},
+  {"category":"Tail Light Holder","skuName":"Tail Light Holder","serviceCharge":80},
+  {"category":"Throttle","skuName":"Throttle 3+2+2 Pins","serviceCharge":107},
+  {"category":"Throttle","skuName":"Throttle 3+3+2 Pins","serviceCharge":107},
+  {"category":"USB","skuName":"USB - E-Oxigen","serviceCharge":30},
+  {"category":"USB","skuName":"USB - E-Sprinto","serviceCharge":30},
+  {"category":"USB","skuName":"USB - Electric-Pe","serviceCharge":30},
+  {"category":"USB","skuName":"USB - Kaikan","serviceCharge":30},
+  {"category":"USB","skuName":"USB - Stella","serviceCharge":30},
+  {"category":"Wire Harness","skuName":"Wire Harness - E-Oxigen","serviceCharge":1000},
+  {"category":"Wire Harness","skuName":"Wire Harness - E-Sprinto","serviceCharge":1000},
+  {"category":"Wire Harness","skuName":"Wire Harness - Electric-Pe","serviceCharge":1000},
+  {"category":"Wire Harness","skuName":"Wire Harness - Kaikan","serviceCharge":1000},
+  {"category":"Wire Harness","skuName":"Wire Harness - Stella","serviceCharge":1000},
+  {"category":"Battery Clamp","skuName":"Battery Clamp - E-Oxigen","serviceCharge":32},
+  {"category":"Battery Clamp","skuName":"Battery Clamp - E-Sprinto","serviceCharge":32},
+  {"category":"Battery Clamp","skuName":"Battery Clamp - Electric-Pe","serviceCharge":32},
+  {"category":"Battery Clamp","skuName":"Battery Clamp - Kaikan","serviceCharge":32},
+  {"category":"Battery Clamp","skuName":"Battery Clamp - Stella","serviceCharge":32},
+  {"category":"Bearings","skuName":"Bearing 5062","serviceCharge":27},
+  {"category":"Bearings","skuName":"Bearing 6004","serviceCharge":27},
+  {"category":"Bearings","skuName":"Bearing 6201","serviceCharge":27},
+  {"category":"Bearings","skuName":"Bearing 6204","serviceCharge":27},
+  {"category":"Bearings","skuName":"Bearing 6401","serviceCharge":27},
+  {"category":"Bearings","skuName":"Motor Bearing","serviceCharge":27},
+  {"category":"Bearings","skuName":"Wheel Bearing Front","serviceCharge":27},
+  {"category":"Brake Hose Pipe","skuName":"Brake Hose Pipe","serviceCharge":70},
+  {"category":"Brake Liner","skuName":"Brake Liner - E-Oxigen","serviceCharge":70},
+  {"category":"Brake Liner","skuName":"Brake Liner - E-Sprinto","serviceCharge":70},
+  {"category":"Brake Liner","skuName":"Brake Liner - Electric-Pe","serviceCharge":70},
+  {"category":"Brake Liner","skuName":"Brake Liner - Kaikan","serviceCharge":70},
+  {"category":"Brake Liner","skuName":"Brake Liner - Stella","serviceCharge":70},
+  {"category":"Brake Oil","skuName":"Brake Oil","serviceCharge":35},
+  {"category":"Brake Pad","skuName":"Brake Pad","serviceCharge":38},
+  {"category":"Brake Shoe","skuName":"Brake Shoe","serviceCharge":45},
+  {"category":"Caliper Pump Kit","skuName":"Caliper Pump Kit - E-Oxigen","serviceCharge":297},
+  {"category":"Caliper Pump Kit","skuName":"Caliper Pump Kit - E-Sprinto","serviceCharge":297},
+  {"category":"Caliper Pump Kit","skuName":"Caliper Pump Kit - Electric-Pe","serviceCharge":297},
+  {"category":"Caliper Pump Kit","skuName":"Caliper Pump Kit - Kaikan","serviceCharge":297},
+  {"category":"Caliper Pump Kit","skuName":"Caliper Pump Kit - Stella","serviceCharge":297},
+  {"category":"Cone Set","skuName":"Cone Set","serviceCharge":165},
+  {"category":"Disc Pad","skuName":"Disc Pad","serviceCharge":38},
+  {"category":"Disc Pump","skuName":"Disc Pump","serviceCharge":220},
+  {"category":"Fasteners","skuName":"Flange Bolt 10*30","serviceCharge":15},
+  {"category":"Fasteners","skuName":"Flange Bolt M10*40 G 8.8","serviceCharge":9},
+  {"category":"Fasteners","skuName":"Front Wheel LH Spacer M12*23","serviceCharge":68},
+  {"category":"Fasteners","skuName":"Pan Head Screw M4*20","serviceCharge":10},
+  {"category":"Frame and Chassis","skuName":"Steel Guard SL-6/DL-4","serviceCharge":650},
+  {"category":"Front Brake Lever","skuName":"Front Brake Lever","serviceCharge":131},
+  {"category":"Front Disc Caliper","skuName":"Front Disc Caliper","serviceCharge":1749},
+  {"category":"Front Disc Plate","skuName":"Front Disc Plate - E-Oxigen","serviceCharge":594},
+  {"category":"Front Disc Plate","skuName":"Front Disc Plate - E-Sprinto","serviceCharge":594},
+  {"category":"Front Disc Plate","skuName":"Front Disc Plate - Electric-Pe","serviceCharge":594},
+  {"category":"Front Disc Plate","skuName":"Front Disc Plate - Kaikan","serviceCharge":594},
+  {"category":"Front Disc Plate","skuName":"Front Disc Plate - Stella","serviceCharge":594},
+  {"category":"Front Fork","skuName":"Front Fork 27mm","serviceCharge":2298},
+  {"category":"Front Fork","skuName":"Front Fork 30mm","serviceCharge":2298},
+  {"category":"Front Rim","skuName":"Front Rim 10 inch","serviceCharge":1158},
+  {"category":"Front Rim","skuName":"Front Rim 12 inch","serviceCharge":1158},
+  {"category":"Front Shocker","skuName":"Front Shocker 25mm LHS","serviceCharge":750},
+  {"category":"Front Shocker","skuName":"Front Shocker 25mm RHS","serviceCharge":750},
+  {"category":"Front Shocker","skuName":"Front Shocker 27mm LHS","serviceCharge":750},
+  {"category":"Front Shocker","skuName":"Front Shocker 27mm RHS","serviceCharge":750},
+  {"category":"Front Shocker","skuName":"Front Shocker 30mm LHS","serviceCharge":750},
+  {"category":"Front Shocker","skuName":"Front Shocker 30mm RHS","serviceCharge":750},
+  {"category":"Front Wheel Mounting Axle","skuName":"Front Wheel Mounting Axle M12*235","serviceCharge":107},
+  {"category":"Handle Bar T","skuName":"Handle Bar T-Stem 27mm","serviceCharge":230},
+  {"category":"Handle Bar T","skuName":"Handle Bar T-Stem 30mm","serviceCharge":230},
+  {"category":"Lever Set","skuName":"Lever Set - E-Oxigen","serviceCharge":75},
+  {"category":"Lever Set","skuName":"Lever Set - E-Sprinto","serviceCharge":75},
+  {"category":"Lever Set","skuName":"Lever Set - Electric-Pe","serviceCharge":75},
+  {"category":"Lever Set","skuName":"Lever Set - Kaikan","serviceCharge":75},
+  {"category":"Lever Set","skuName":"Lever Set - Stella","serviceCharge":75},
+  {"category":"Luggage Box","skuName":"Luggage Box - E-Oxigen","serviceCharge":483},
+  {"category":"Luggage Box","skuName":"Luggage Box - E-Sprinto","serviceCharge":483},
+  {"category":"Luggage Box","skuName":"Luggage Box - Electric-Pe","serviceCharge":483},
+  {"category":"Luggage Box","skuName":"Luggage Box - Kaikan","serviceCharge":483},
+  {"category":"Luggage Box","skuName":"Luggage Box - Stella","serviceCharge":483},
+  {"category":"Master Brake Cylinder","skuName":"Master Brake Cylinder","serviceCharge":290},
+  {"category":"Motor Drum","skuName":"Motor Drum - E-Oxigen","serviceCharge":0},
+  {"category":"Motor Drum","skuName":"Motor Drum - E-Sprinto","serviceCharge":0},
+  {"category":"Motor Drum","skuName":"Motor Drum - Electric-Pe","serviceCharge":0},
+  {"category":"Motor Drum","skuName":"Motor Drum - Kaikan","serviceCharge":0},
+  {"category":"Motor Drum","skuName":"Motor Drum - Stella","serviceCharge":0},
+  {"category":"Rear Brake Drum Assembly","skuName":"Rear Brake Drum Assembly - E-Oxigen","serviceCharge":396},
+  {"category":"Rear Brake Drum Assembly","skuName":"Rear Brake Drum Assembly - E-Sprinto","serviceCharge":396},
+  {"category":"Rear Brake Drum Assembly","skuName":"Rear Brake Drum Assembly - Electric-Pe","serviceCharge":396},
+  {"category":"Rear Brake Drum Assembly","skuName":"Rear Brake Drum Assembly - Kaikan","serviceCharge":396},
+  {"category":"Rear Brake Drum Assembly","skuName":"Rear Brake Drum Assembly - Stella","serviceCharge":396},
+  {"category":"Rear Brake Lever","skuName":"Rear Brake Lever","serviceCharge":194},
+  {"category":"Rear Brake Wire","skuName":"Rear Brake Wire","serviceCharge":60},
+  {"category":"Rear Carrier","skuName":"Rear Carrier - E-Oxigen","serviceCharge":514},
+  {"category":"Rear Carrier","skuName":"Rear Carrier - E-Sprinto","serviceCharge":514},
+  {"category":"Rear Carrier","skuName":"Rear Carrier - Electric-Pe","serviceCharge":514},
+  {"category":"Rear Carrier","skuName":"Rear Carrier - Kaikan","serviceCharge":514},
+  {"category":"Rear Carrier","skuName":"Rear Carrier - Stella","serviceCharge":514},
+  {"category":"Rear Shocker","skuName":"Rear Shocker 12 inch","serviceCharge":444},
+  {"category":"Rear Shocker","skuName":"Rear Shocker 13 inch","serviceCharge":444},
+  {"category":"Rear Wheel Mounting Axle","skuName":"Rear Wheel Mounting Axle M12*225","serviceCharge":103},
+  {"category":"Retraction Clip","skuName":"Retraction Clip","serviceCharge":35},
+  {"category":"Seat Assembly","skuName":"Seat Assembly - E-Oxigen","serviceCharge":982},
+  {"category":"Seat Assembly","skuName":"Seat Assembly - E-Sprinto","serviceCharge":982},
+  {"category":"Seat Assembly","skuName":"Seat Assembly - Electric-Pe","serviceCharge":982},
+  {"category":"Seat Assembly","skuName":"Seat Assembly - Kaikan","serviceCharge":982},
+  {"category":"Seat Assembly","skuName":"Seat Assembly - Stella","serviceCharge":982},
+  {"category":"Seat Latch","skuName":"Seat Latch","serviceCharge":97},
+  {"category":"Seat Lock Cable","skuName":"Seat Lock Cable - E-Oxigen","serviceCharge":89},
+  {"category":"Seat Lock Cable","skuName":"Seat Lock Cable - E-Sprinto","serviceCharge":89},
+  {"category":"Seat Lock Cable","skuName":"Seat Lock Cable - Electric-Pe","serviceCharge":89},
+  {"category":"Seat Lock Cable","skuName":"Seat Lock Cable - Kaikan","serviceCharge":89},
+  {"category":"Seat Lock Cable","skuName":"Seat Lock Cable - Stella","serviceCharge":89},
+  {"category":"Stand","skuName":"Main Stand","serviceCharge":240},
+  {"category":"Stand","skuName":"Main Stand Spring","serviceCharge":22},
+  {"category":"Stand","skuName":"Side Stand","serviceCharge":60},
+  {"category":"Stand","skuName":"Side Stand Spring","serviceCharge":12},
+  {"category":"Steering","skuName":"Handle T","serviceCharge":230},
+  {"category":"Swing Arm","skuName":"Swing Arm - E-Oxigen","serviceCharge":586},
+  {"category":"Swing Arm","skuName":"Swing Arm - E-Sprinto","serviceCharge":586},
+  {"category":"Swing Arm","skuName":"Swing Arm - Electric-Pe","serviceCharge":586},
+  {"category":"Swing Arm","skuName":"Swing Arm - Kaikan","serviceCharge":586},
+  {"category":"Swing Arm","skuName":"Swing Arm - Stella","serviceCharge":586},
+  {"category":"Tubeless Tyre Valve","skuName":"Tubeless Tyre Valve 10 inch","serviceCharge":120},
+  {"category":"Tubeless Tyre Valve","skuName":"Tubeless Tyre Valve 12 inch","serviceCharge":120},
+  {"category":"Tyre","skuName":"Tyre 3*10","serviceCharge":850},
+  {"category":"Tyre","skuName":"Tyre 3*12","serviceCharge":850},
+  {"category":"Battery Box Cover","skuName":"Battery Box Cover - E-Oxigen","serviceCharge":95},
+  {"category":"Battery Box Cover","skuName":"Battery Box Cover - E-Sprinto","serviceCharge":95},
+  {"category":"Battery Box Cover","skuName":"Battery Box Cover - Electric-Pe","serviceCharge":95},
+  {"category":"Battery Box Cover","skuName":"Battery Box Cover - Kaikan","serviceCharge":95},
+  {"category":"Battery Box Cover","skuName":"Battery Box Cover - Stella","serviceCharge":95},
+  {"category":"Body Centre Cover Front","skuName":"Body Centre Cover Front - E-Oxigen","serviceCharge":192},
+  {"category":"Body Centre Cover Front","skuName":"Body Centre Cover Front - E-Sprinto","serviceCharge":192},
+  {"category":"Body Centre Cover Front","skuName":"Body Centre Cover Front - Electric-Pe","serviceCharge":192},
+  {"category":"Body Centre Cover Front","skuName":"Body Centre Cover Front - Kaikan","serviceCharge":192},
+  {"category":"Body Centre Cover Front","skuName":"Body Centre Cover Front - Stella","serviceCharge":192},
+  {"category":"Body Centre Cover Rear","skuName":"Body Centre Cover Rear","serviceCharge":154},
+  {"category":"Body Cover","skuName":"Body Cover LH - E-Oxigen","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover LH - E-Sprinto","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover LH - Electric-Pe","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover LH - Kaikan","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover LH - Stella","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover RH - E-Oxigen","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover RH - E-Sprinto","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover RH - Electric-Pe","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover RH - Kaikan","serviceCharge":486},
+  {"category":"Body Cover","skuName":"Body Cover RH - Stella","serviceCharge":486},
+  {"category":"Cable Tie","skuName":"Cable Tie - E-Oxigen","serviceCharge":2},
+  {"category":"Cable Tie","skuName":"Cable Tie - E-Sprinto","serviceCharge":2},
+  {"category":"Cable Tie","skuName":"Cable Tie - Electric-Pe","serviceCharge":2},
+  {"category":"Cable Tie","skuName":"Cable Tie - Kaikan","serviceCharge":2},
+  {"category":"Cable Tie","skuName":"Cable Tie - Stella","serviceCharge":2},
+  {"category":"Floor Board","skuName":"Floor Board - E-Oxigen","serviceCharge":486},
+  {"category":"Floor Board","skuName":"Floor Board - E-Sprinto","serviceCharge":486},
+  {"category":"Floor Board","skuName":"Floor Board - Electric-Pe","serviceCharge":486},
+  {"category":"Floor Board","skuName":"Floor Board - Kaikan","serviceCharge":486},
+  {"category":"Floor Board","skuName":"Floor Board - Stella","serviceCharge":486},
+  {"category":"Floor Board","skuName":"Floor Board Center Cover","serviceCharge":54},
+  {"category":"Floor Mat","skuName":"Floor Mat - E-Oxigen","serviceCharge":171},
+  {"category":"Floor Mat","skuName":"Floor Mat - E-Sprinto","serviceCharge":171},
+  {"category":"Floor Mat","skuName":"Floor Mat - Electric-Pe","serviceCharge":171},
+  {"category":"Floor Mat","skuName":"Floor Mat - Kaikan","serviceCharge":171},
+  {"category":"Floor Mat","skuName":"Floor Mat - Stella","serviceCharge":171},
+  {"category":"Foot Rest","skuName":"Foot Rest - E-Oxigen","serviceCharge":384},
+  {"category":"Foot Rest","skuName":"Foot Rest - E-Sprinto","serviceCharge":384},
+  {"category":"Foot Rest","skuName":"Foot Rest - Electric-Pe","serviceCharge":384},
+  {"category":"Foot Rest","skuName":"Foot Rest - Kaikan","serviceCharge":384},
+  {"category":"Foot Rest","skuName":"Foot Rest - Stella","serviceCharge":384},
+  {"category":"Front Centre Cover","skuName":"Front Centre Cover - E-Oxigen","serviceCharge":254},
+  {"category":"Front Centre Cover","skuName":"Front Centre Cover - E-Sprinto","serviceCharge":254},
+  {"category":"Front Centre Cover","skuName":"Front Centre Cover - Electric-Pe","serviceCharge":254},
+  {"category":"Front Centre Cover","skuName":"Front Centre Cover - Kaikan","serviceCharge":254},
+  {"category":"Front Centre Cover","skuName":"Front Centre Cover - Stella","serviceCharge":254},
+  {"category":"Front Fender","skuName":"Front Fender - E-Oxigen","serviceCharge":340},
+  {"category":"Front Fender","skuName":"Front Fender - E-Sprinto","serviceCharge":340},
+  {"category":"Front Fender","skuName":"Front Fender - Electric-Pe","serviceCharge":340},
+  {"category":"Front Fender","skuName":"Front Fender - Kaikan","serviceCharge":340},
+  {"category":"Front Fender","skuName":"Front Fender - Stella","serviceCharge":340},
+  {"category":"Front Fender","skuName":"Front Inner Fender","serviceCharge":155},
+  {"category":"Front Visor","skuName":"Front Visor - E-Oxigen","serviceCharge":417},
+  {"category":"Front Visor","skuName":"Front Visor - E-Sprinto","serviceCharge":417},
+  {"category":"Front Visor","skuName":"Front Visor - Electric-Pe","serviceCharge":417},
+  {"category":"Front Visor","skuName":"Front Visor - Kaikan","serviceCharge":417},
+  {"category":"Front Visor","skuName":"Front Visor - Stella","serviceCharge":417},
+  {"category":"Handle Bar Cover","skuName":"Handle Bar Cover - E-Oxigen","serviceCharge":43},
+  {"category":"Handle Bar Cover","skuName":"Handle Bar Cover - E-Sprinto","serviceCharge":43},
+  {"category":"Handle Bar Cover","skuName":"Handle Bar Cover - Electric-Pe","serviceCharge":43},
+  {"category":"Handle Bar Cover","skuName":"Handle Bar Cover - Kaikan","serviceCharge":43},
+  {"category":"Handle Bar Cover","skuName":"Handle Bar Cover - Stella","serviceCharge":43},
+  {"category":"Handle Bar Cover Air Mesh","skuName":"Handle Bar Cover Air Mesh - E-Oxigen","serviceCharge":43},
+  {"category":"Handle Bar Cover Air Mesh","skuName":"Handle Bar Cover Air Mesh - E-Sprinto","serviceCharge":43},
+  {"category":"Handle Bar Cover Air Mesh","skuName":"Handle Bar Cover Air Mesh - Electric-Pe","serviceCharge":43},
+  {"category":"Handle Bar Cover Air Mesh","skuName":"Handle Bar Cover Air Mesh - Kaikan","serviceCharge":43},
+  {"category":"Handle Bar Cover Air Mesh","skuName":"Handle Bar Cover Air Mesh - Stella","serviceCharge":43},
+  {"category":"Headlight Cover","skuName":"Headlight Cover - E-Oxigen","serviceCharge":737},
+  {"category":"Headlight Cover","skuName":"Headlight Cover - E-Sprinto","serviceCharge":737},
+  {"category":"Headlight Cover","skuName":"Headlight Cover - Electric-Pe","serviceCharge":737},
+  {"category":"Headlight Cover","skuName":"Headlight Cover - Kaikan","serviceCharge":737},
+  {"category":"Headlight Cover","skuName":"Headlight Cover - Stella","serviceCharge":737},
+  {"category":"Headlight Decoration Air Mesh","skuName":"Headlight Decoration Air Mesh - E-Oxigen","serviceCharge":57},
+  {"category":"Headlight Decoration Air Mesh","skuName":"Headlight Decoration Air Mesh - E-Sprinto","serviceCharge":57},
+  {"category":"Headlight Decoration Air Mesh","skuName":"Headlight Decoration Air Mesh - Electric-Pe","serviceCharge":57},
+  {"category":"Headlight Decoration Air Mesh","skuName":"Headlight Decoration Air Mesh - Kaikan","serviceCharge":57},
+  {"category":"Headlight Decoration Air Mesh","skuName":"Headlight Decoration Air Mesh - Stella","serviceCharge":57},
+  {"category":"Headlight Glass","skuName":"Headlight Glass","serviceCharge":168},
+  {"category":"Indicator Cover","skuName":"Indicator Cover - E-Oxigen","serviceCharge":302},
+  {"category":"Indicator Cover","skuName":"Indicator Cover - E-Sprinto","serviceCharge":302},
+  {"category":"Indicator Cover","skuName":"Indicator Cover - Electric-Pe","serviceCharge":302},
+  {"category":"Indicator Cover","skuName":"Indicator Cover - Kaikan","serviceCharge":302},
+  {"category":"Indicator Cover","skuName":"Indicator Cover - Stella","serviceCharge":302},
+  {"category":"Nozzle","skuName":"Nozzle Front","serviceCharge":28},
+  {"category":"Nozzle","skuName":"Nozzle Rear","serviceCharge":37},
+  {"category":"Rear Fender","skuName":"Rear Fender - E-Oxigen","serviceCharge":103},
+  {"category":"Rear Fender","skuName":"Rear Fender - E-Sprinto","serviceCharge":103},
+  {"category":"Rear Fender","skuName":"Rear Fender - Electric-Pe","serviceCharge":103},
+  {"category":"Rear Fender","skuName":"Rear Fender - Kaikan","serviceCharge":103},
+  {"category":"Rear Fender","skuName":"Rear Fender - Stella","serviceCharge":103},
+  {"category":"Rear Hand Rest","skuName":"Rear Hand Rest - E-Oxigen","serviceCharge":450},
+  {"category":"Rear Hand Rest","skuName":"Rear Hand Rest - E-Sprinto","serviceCharge":450},
+  {"category":"Rear Hand Rest","skuName":"Rear Hand Rest - Electric-Pe","serviceCharge":450},
+  {"category":"Rear Hand Rest","skuName":"Rear Hand Rest - Kaikan","serviceCharge":450},
+  {"category":"Rear Hand Rest","skuName":"Rear Hand Rest - Stella","serviceCharge":450},
+  {"category":"Rear Lower Fender","skuName":"Rear Lower Fender - E-Oxigen","serviceCharge":103},
+  {"category":"Rear Lower Fender","skuName":"Rear Lower Fender - E-Sprinto","serviceCharge":103},
+  {"category":"Rear Lower Fender","skuName":"Rear Lower Fender - Electric-Pe","serviceCharge":103},
+  {"category":"Rear Lower Fender","skuName":"Rear Lower Fender - Kaikan","serviceCharge":103},
+  {"category":"Rear Lower Fender","skuName":"Rear Lower Fender - Stella","serviceCharge":103},
+  {"category":"Rear View Mirror","skuName":"Rear View Mirror","serviceCharge":89},
+  {"category":"Seat Cover","skuName":"Seat Cover","serviceCharge":250},
+  {"category":"Side Panel","skuName":"Side Panel LH - E-Oxigen","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel LH - E-Sprinto","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel LH - Electric-Pe","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel LH - Kaikan","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel LH - Stella","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel RH - E-Oxigen","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel RH - E-Sprinto","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel RH - Electric-Pe","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel RH - Kaikan","serviceCharge":714},
+  {"category":"Side Panel","skuName":"Side Panel RH - Stella","serviceCharge":714},
+  {"category":"Side Rail","skuName":"Side Rail LH - E-Oxigen","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail LH - E-Sprinto","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail LH - Electric-Pe","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail LH - Kaikan","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail LH - Stella","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail RH - E-Oxigen","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail RH - E-Sprinto","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail RH - Electric-Pe","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail RH - Kaikan","serviceCharge":238},
+  {"category":"Side Rail","skuName":"Side Rail RH - Stella","serviceCharge":238},
+  {"category":"Speedometer Cover","skuName":"Speedometer Cover - E-Oxigen","serviceCharge":216},
+  {"category":"Speedometer Cover","skuName":"Speedometer Cover - E-Sprinto","serviceCharge":216},
+  {"category":"Speedometer Cover","skuName":"Speedometer Cover - Electric-Pe","serviceCharge":216},
+  {"category":"Speedometer Cover","skuName":"Speedometer Cover - Kaikan","serviceCharge":216},
+  {"category":"Speedometer Cover","skuName":"Speedometer Cover - Stella","serviceCharge":216},
+  {"category":"Stainless Bumper","skuName":"Stainless Bumper - E-Oxigen","serviceCharge":150},
+  {"category":"Stainless Bumper","skuName":"Stainless Bumper - E-Sprinto","serviceCharge":150},
+  {"category":"Stainless Bumper","skuName":"Stainless Bumper - Electric-Pe","serviceCharge":150},
+  {"category":"Stainless Bumper","skuName":"Stainless Bumper - Kaikan","serviceCharge":150},
+  {"category":"Stainless Bumper","skuName":"Stainless Bumper - Stella","serviceCharge":150},
+  {"category":"Swing Arm","skuName":"Swing Arm Cover","serviceCharge":262},
+  {"category":"Tail Light Upper Cover","skuName":"Tail Light Upper Cover - E-Sprinto","serviceCharge":200},
+  {"category":"Tool Box","skuName":"Tool Box - E-Oxigen","serviceCharge":594},
+  {"category":"Tool Box","skuName":"Tool Box - E-Sprinto","serviceCharge":594},
+  {"category":"Tool Box","skuName":"Tool Box - Electric-Pe","serviceCharge":594},
+  {"category":"Tool Box","skuName":"Tool Box - Kaikan","serviceCharge":594},
+  {"category":"Tool Box","skuName":"Tool Box - Stella","serviceCharge":594},
+  {"category":"Under Cover","skuName":"Under Cover - E-Oxigen","serviceCharge":189},
+  {"category":"Under Cover","skuName":"Under Cover - E-Sprinto","serviceCharge":189},
+  {"category":"Under Cover","skuName":"Under Cover - Electric-Pe","serviceCharge":189},
+  {"category":"Under Cover","skuName":"Under Cover - Kaikan","serviceCharge":189},
+  {"category":"Under Cover","skuName":"Under Cover - Stella","serviceCharge":189},
+  {"category":"VIN Cover","skuName":"VIN Cover","serviceCharge":26},
+  {"category":"Wheel Cover","skuName":"Wheel Cover LH - E-Oxigen","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover LH - E-Sprinto","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover LH - Electric-Pe","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover LH - Kaikan","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover LH - Stella","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover RH - E-Oxigen","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover RH - E-Sprinto","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover RH - Electric-Pe","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover RH - Kaikan","serviceCharge":130},
+  {"category":"Wheel Cover","skuName":"Wheel Cover RH - Stella","serviceCharge":130}
+];
+
+function renderMaasCharges(query = '') {
+  const tbody = document.getElementById('maasChargesTbody');
+  const countEl = document.getElementById('maasChargesCount');
+  const q = query.toLowerCase().trim();
+
+  const filtered = maasChargesData.filter(item => {
+    return item.skuName.toLowerCase().includes(q) || 
+           item.category.toLowerCase().includes(q) ||
+           String(item.serviceCharge).includes(q);
+  });
+
+  countEl.innerText = `Showing ${filtered.length} of ${maasChargesData.length} parts`;
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center; padding: 20px; color: #7f8c8d;">No matching parts found.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(item => `
+    <tr>
+      <td>${item.category}</td>
+      <td>${item.skuName}</td>
+      <td>₹${item.serviceCharge}</td>
+    </tr>
+  `).join('');
+}
+
+function filterMaasCharges() {
+  const q = document.getElementById('maasChargesSearch').value;
+  renderMaasCharges(q);
+}
 
 // --- MAIN TAB SWITCHING ---
 function switchMainTab(tabName, btn) {
@@ -1527,6 +2001,7 @@ function resetMaaSFilters() {
 
 window.onload = function() {
   renderMaaS();
+  renderMaasCharges();
 };
 </script>
 
